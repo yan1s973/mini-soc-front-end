@@ -1,0 +1,70 @@
+import { Navbar } from './Navbar'
+
+const VIDEO_URL =
+  'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260210_031346_d87182fb-b0af-4273-84d1-c6fd17d6bf0f.mp4'
+
+type HeroProps = {
+  onShock: () => void
+}
+
+export function Hero({ onShock }: HeroProps) {
+  return (
+    <>
+      <video
+        className="absolute inset-x-0 top-0 h-screen w-full object-cover"
+        src={VIDEO_URL}
+        autoPlay
+        loop
+        muted
+        playsInline
+        aria-hidden="true"
+      />
+      {/* Fades the video into the page so the dashboard can rise out of it. */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-[calc(100vh-12rem)] h-48 bg-gradient-to-b from-black/0 to-black"
+        aria-hidden="true"
+      />
+
+      <Navbar onShock={onShock} />
+
+      <div
+        id="accueil"
+        className="relative z-10 mx-auto mt-24 flex w-full flex-col items-center px-6 text-center md:mt-32"
+      >
+        <div className="inline-flex h-[38px] items-center gap-2 rounded-[10px] border border-[rgba(164,132,215,0.5)] bg-[rgba(85,80,110,0.4)] pr-3 pl-1 font-cabin text-sm font-medium whitespace-nowrap text-white backdrop-blur-md">
+          <span className="rounded-md bg-primary px-2 py-1 leading-none">
+            Live
+          </span>
+          Real-Time AI Monitoring
+        </div>
+
+        <h1 className="mt-6 max-w-[1000px] font-serif text-5xl leading-[1.1] text-balance text-white md:text-7xl lg:text-[96px]">
+          Prédire, surveiller <em className="mx-1 italic">et</em> se corriger
+          seul
+        </h1>
+
+        <p className="mt-6 max-w-[662px] font-inter text-lg font-normal text-white/70">
+          Le tableau de bord de DataOracle : prédictions en temps réel,
+          détection de dérive, réentraînement automatique et versions du
+          modèle, au même endroit.
+        </p>
+
+        <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+          <a
+            href="#dashboard"
+            className="rounded-[10px] bg-primary px-6 py-3.5 font-cabin text-base font-medium text-white transition-colors hover:bg-[#8d52fd]"
+          >
+            Ouvrir le dashboard
+          </a>
+          <a
+            href="#dashboard"
+            onClick={onShock}
+            className="rounded-[10px] bg-primary-dark px-6 py-3.5 font-cabin text-base font-medium text-[#f6f7f9] transition-colors hover:bg-[#3a3058]"
+          >
+            Simuler un choc
+          </a>
+        </div>
+      </div>
+    </>
+  )
+}
