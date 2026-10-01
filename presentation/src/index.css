@@ -1,0 +1,15 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-manrope: 'Manrope', sans-serif;
+  --font-cabin: 'Cabin', sans-serif;
+  --font-serif: 'Instrument Serif', serif;
+  --font-inter: 'Inter', sans-serif;
+
+  --color-primary: #7b39fc;
+  --color-primary-dark: #2b2344;
+}
+
+body {
+  @apply bg-black font-inter text-white antialiased;
+}
