@@ -8,6 +8,15 @@ type NavLink = {
   hasDropdown?: boolean
 }
 
+const projectLinks = [
+  { label: 'Le problème', href: '#projet' },
+  { label: 'Le cycle temps réel', href: '#fonctionnement' },
+  { label: 'Détection de dérive', href: '#derive' },
+  { label: 'Réentraînement', href: '#reentrainement' },
+  { label: 'Dashboard & Oracle AI', href: '#dashboard' },
+  { label: 'Évaluation', href: '#evaluation' },
+]
+
 const links: NavLink[] = [
   { label: 'Accueil', href: '#accueil' },
   { label: 'Le projet', href: '#projet', hasDropdown: true },
@@ -43,14 +52,32 @@ export function Navbar() {
 
           <ul className="hidden items-center gap-8 lg:flex">
             {links.map((link) => (
-              <li key={link.label}>
+              <li key={link.label} className="group relative">
                 <a
                   href={link.href}
                   className="flex items-center gap-1 font-manrope text-sm font-medium text-white transition-opacity hover:opacity-80"
                 >
                   {link.label}
-                  {link.hasDropdown && <ChevronDown className="h-4 w-4" />}
+                  {link.hasDropdown && (
+                    <ChevronDown className="h-4 w-4 transition-transform group-focus-within:rotate-180 group-hover:rotate-180" />
+                  )}
                 </a>
+                {link.hasDropdown && (
+                  <div className="invisible absolute top-full left-0 pt-3 opacity-0 transition-opacity group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+                    <ul className="w-60 rounded-xl border border-[rgba(164,132,215,0.3)] bg-[rgba(20,16,32,0.9)] p-2 backdrop-blur-md">
+                      {projectLinks.map((item) => (
+                        <li key={item.href}>
+                          <a
+                            href={item.href}
+                            className="block rounded-lg px-3 py-2 font-manrope text-sm font-medium text-white/80 transition-colors hover:bg-white/5 hover:text-white"
+                          >
+                            {item.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </li>
             ))}
           </ul>
