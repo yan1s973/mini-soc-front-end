@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#000000">
+<title>MiniSOC — Console</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.5 19.5 5.5v6c0 4.7-3.2 8.5-7.5 10-4.3-1.5-7.5-5.3-7.5-10v-6z'/%3E%3Ccircle cx='12' cy='11.5' r='2.4' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<script>try{var t=localStorage.getItem("minisoc-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<style>
+  /* Noir immédiat : jamais de flash blanc */
+  html, body { background: #000; color: #fff; }
+
+  :root {
+    --font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --serif: "Instrument Serif", "Times New Roman", Times, serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+    --high: #f26b1d;
+    --crit: #ff4d5e;
+    --ok: #3ddc84;
+    --ai: #c9d6ff;
+
+    /* Console : thème sombre (référence) */
+    --bg: #000;
+    --text: #fff;
+    --text-2: #a1a1a1;
+    --text-3: #8a8a8a;
+    --border: rgba(255, 255, 255, 0.12);
+    --border-strong: rgba(255, 255, 255, 0.22);
+    --glass: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.55) 50%, rgba(160, 175, 200, 0.05));
+    --glass-hi: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    --row: rgba(255, 255, 255, 0.035);
+    --row-border: rgba(255, 255, 255, 0.07);
+    --topbar: rgba(0, 0, 0, 0.6);
+    --metal: linear-gradient(105deg, #050505 0%, #2a2a2a 48%, #4a4a4a 100%);
+    --metal-hover: linear-gradient(105deg, #111 0%, #3a3a3a 45%, #6a6a6a 100%);
+    --metal-border: rgba(198, 198, 198, 0.55);
+    --metal-text: #f3f3f3;
+    --node-fill: #0b0b0b;
+    --node-stroke: rgba(255, 255, 255, 0.35);
+    --link: rgba(255, 255, 255, 0.16);
+  }
+
+  /* Thème clair de la console (l'accueil reste cinématographique, en noir) */
+  :root[data-theme="light"] {
+    --bg: #f2f2f4;
+    --text: #111;
+    --text-2: #4d4d52;
+    --text-3: #6b6b70;
+    --border: rgba(0, 0, 0, 0.1);
+    --border-strong: rgba(0, 0, 0, 0.2);
+    --glass: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7) 50%, rgba(225, 230, 240, 0.8));
+    --glass-hi: inset 0 1px 0 #fff, 0 20px 40px -24px rgba(20, 25, 40, 0.25);
+    --row: rgba(0, 0, 0, 0.03);
+    --row-border: rgba(0, 0, 0, 0.07);
+    --topbar: rgba(242, 242, 244, 0.72);
+    --metal: linear-gradient(105deg, #ffffff 0%, #ececec 48%, #d6d6d6 100%);
+    --metal-hover: linear-gradient(105deg, #ffffff 0%, #f2f4fa 45%, #d9dfeb 100%);
+    --metal-border: rgba(0, 0, 0, 0.18);
+    --metal-text: #111;
+    --node-fill: #ffffff;
+    --node-stroke: rgba(0, 0, 0, 0.3);
+    --link: rgba(0, 0, 0, 0.16);
+    --high: #c2510f;
+    --crit: #d61f37;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme]) {
+      --bg: #f2f2f4;
+      --text: #111;
+      --text-2: #4d4d52;
+      --text-3: #6b6b70;
+      --border: rgba(0, 0, 0, 0.1);
+      --border-strong: rgba(0, 0, 0, 0.2);
+      --glass: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7) 50%, rgba(225, 230, 240, 0.8));
+      --glass-hi: inset 0 1px 0 #fff, 0 20px 40px -24px rgba(20, 25, 40, 0.25);
+      --row: rgba(0, 0, 0, 0.03);
+      --row-border: rgba(0, 0, 0, 0.07);
+      --topbar: rgba(242, 242, 244, 0.72);
+      --metal: linear-gradient(105deg, #ffffff 0%, #ececec 48%, #d6d6d6 100%);
+      --metal-hover: linear-gradient(105deg, #ffffff 0%, #f2f4fa 45%, #d9dfeb 100%);
+      --metal-border: rgba(0, 0, 0, 0.18);
+      --metal-text: #111;
+      --node-fill: #ffffff;
+      --node-stroke: rgba(0, 0, 0, 0.3);
+      --link: rgba(0, 0, 0, 0.16);
+      --high: #c2510f;
+      --crit: #d61f37;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+  body[data-view="console"] { background: var(--bg); color: var(--text); transition: background-color 0.5s ease; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; color: inherit; }
+  svg { display: block; flex-shrink: 0; }
+  :focus-visible { outline: 2px solid #8fb0ff; outline-offset: 3px; }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.07;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ================= Vues & transition ================= */
+  .view { position: relative; }
+  .view[hidden] { display: none; }
+  .view.is-leaving { animation: view-out 0.55s var(--ease) forwards; }
+  .view.is-entering { animation: view-in 0.8s var(--ease) both; }
+  @keyframes view-out { to { opacity: 0; transform: scale(1.03); filter: blur(8px); } }
+  @keyframes view-in { from { opacity: 0; transform: scale(0.985); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+
+  /* ================= Éléments partagés ================= */
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 15.5px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  .logo svg { width: 22px; height: 22px; }
+  .logo-suffix { font-weight: 400; }
+
+  .pill {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 7px;
+    overflow: hidden;
+    border: 1px solid var(--metal-border);
+    background: var(--metal);
+    color: var(--metal-text);
+    font-size: 13.5px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+  }
+  .pill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.16) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.6s ease;
+    pointer-events: none;
+  }
+  .pill:hover { background: var(--metal-hover); border-color: rgba(235, 235, 235, 0.9); box-shadow: 0 0 18px rgba(200, 210, 230, 0.18); }
+  .pill:hover::before { transform: translateX(120%); }
+  .pill[aria-current="page"] { border-color: rgba(235, 235, 235, 0.95); box-shadow: 0 0 18px rgba(200, 210, 230, 0.2); }
+  .pill svg { width: 15px; height: 15px; }
+
+  .btn {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, filter 0.35s ease;
+  }
+  .btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(115deg, transparent 20%, rgba(255, 255, 255, 0.45) 48%, transparent 76%);
+    transform: translateX(-130%);
+    transition: transform 0.65s ease;
+    pointer-events: none;
+  }
+  .btn:hover::after { transform: translateX(130%); }
+  .btn svg { width: 15px; height: 15px; }
+  .btn[aria-busy="true"] { filter: saturate(0.4) brightness(0.85); cursor: progress; }
+  .btn-solid {
+    background: linear-gradient(180deg, #ffffff 0%, #e7e7e7 48%, #cfcfcf 100%);
+    color: #111;
+    border: 1px solid #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
+  .btn-solid:hover {
+    background: linear-gradient(180deg, #fff 0%, #f3f6ff 42%, #d5def2 100%);
+    border-color: #f2f6ff;
+    box-shadow: inset 0 1px 0 #fff, 0 0 22px rgba(186, 208, 255, 0.35), 0 8px 18px rgba(255, 255, 255, 0.12);
+  }
+  .btn-ghost {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.45) 50%, rgba(160, 175, 200, 0.08));
+    color: #fff;
+    border: 1px solid rgba(198, 198, 198, 0.45);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+  .btn-ghost:hover {
+    background: linear-gradient(135deg, rgba(210, 225, 255, 0.18), rgba(0, 0, 0, 0.35) 48%, rgba(180, 195, 220, 0.16));
+    border-color: rgba(220, 230, 255, 0.75);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 0 20px rgba(170, 200, 255, 0.22);
+  }
+  .btn-frost { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-color: rgba(198, 198, 198, 0.55); }
+  :root[data-theme="light"] .view-console .btn-ghost { color: #111; background: linear-gradient(135deg, #fff, #f0f0f2 50%, #e4e8f0); border-color: rgba(0, 0, 0, 0.16); }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme]) .view-console .btn-ghost { color: #111; background: linear-gradient(135deg, #fff, #f0f0f2 50%, #e4e8f0); border-color: rgba(0, 0, 0, 0.16); }
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 15px;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #7d7d7d 0%, #2a2a2a 52%, #0a0a0a 100%);
+    color: #f2f2f2;
+    font-size: 12.5px;
+    letter-spacing: -0.01em;
+  }
+  .badge-star { width: 18px; height: 20px; filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.45)); }
+
+  em.serif {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.08em;
+    letter-spacing: -0.03em;
+    color: #9a9a9a;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 13px;
+    border-radius: 980px;
+    border: 1px solid var(--border);
+    background: var(--row);
+    font-size: 12.5px;
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+  .status-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-3); }
+  .status-pill.live { color: var(--ok); border-color: rgba(61, 220, 132, 0.35); background: rgba(61, 220, 132, 0.08); }
+  .status-pill.live .dot { background: var(--ok); box-shadow: 0 0 10px var(--ok); }
+  .status-pill.down { color: var(--crit); border-color: rgba(255, 77, 94, 0.35); background: rgba(255, 77, 94, 0.08); }
+  .status-pill.down .dot { background: var(--crit); animation: blink 1.2s steps(2, start) infinite; }
+  @keyframes blink { to { visibility: hidden; } }
+
+  .live-dot { position: relative; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); }
+  .live-dot.is-down { background: var(--crit); box-shadow: 0 0 10px var(--crit); }
+  .live-dot::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    color: var(--ok);
+    animation: ping 2.4s var(--ease) infinite;
+  }
+  .live-dot.is-down::after { color: var(--crit); }
+  @keyframes ping { from { transform: scale(0.6); opacity: 0.8; } to { transform: scale(2.2); opacity: 0; } }
+
+  /* ================= Page 1 : Accueil ================= */
+  .view-welcome {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: #000;
+    color: #fff;
+    overflow: hidden;
+  }
+  .hero-photo {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 38% 20% at 30% 34%, rgba(255, 255, 255, 0.5), transparent 70%),
+      radial-gradient(ellipse 30% 16% at 58% 30%, rgba(255, 255, 255, 0.4), transparent 70%),
+      radial-gradient(ellipse 34% 18% at 80% 40%, rgba(255, 255, 255, 0.32), transparent 72%),
+      radial-gradient(ellipse 70% 40% at 50% 42%, rgba(120, 120, 130, 0.22), transparent 75%),
+      #000;
+    animation: in-photo 1.6s var(--ease) both;
+  }
+  .hero-photo video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  @keyframes in-photo { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+
+  .welcome {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  .welcome-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 22px 40px 10px;
+  }
+  .welcome-header .logo { justify-self: start; }
+  .welcome-nav { display: flex; gap: 8px; justify-self: center; }
+  .welcome-header .status-pill { justify-self: end; background: rgba(0, 0, 0, 0.45); border-color: rgba(255, 255, 255, 0.16); color: #d8d8d8; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+  .welcome-hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 8px 24px 80px;
+  }
+  .welcome-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 920px;
+  }
+  .welcome-copy .badge { margin-bottom: 22px; }
+  .welcome h1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: clamp(36px, 4.4vw, 76px);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 1.12;
+  }
+  .headline-line { display: block; overflow: hidden; padding: 0.06em 0.15em 0.14em; }
+  .headline-line > span { display: inline-block; }
+  .welcome-lede {
+    max-width: 520px;
+    margin-top: 18px;
+    color: #9a9a9a;
+    font-size: clamp(15.5px, 1.1vw, 19px);
+    line-height: 1.55;
+    letter-spacing: -0.015em;
+  }
+  .welcome-lede strong { color: #e8e8e8; font-weight: 500; }
+  .welcome-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 26px; }
+  .welcome-actions .btn { height: 44px; padding: 0 20px; }
+  .welcome-actions .btn-solid:hover { box-shadow: inset 0 1px 0 #fff, 0 0 26px rgba(186, 208, 255, 0.4), 0 8px 18px rgba(255, 255, 255, 0.14); }
+  .kbd-hint { margin-top: 18px; font-size: 12px; color: #7a7a7a; }
+  .kbd-hint kbd { font-family: var(--mono); font-size: 11px; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.18); color: #bdbdbd; }
+
+  .welcome-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 0 72px max(36px, env(safe-area-inset-bottom));
+    color: #d8d8d8;
+  }
+  .wstat { display: inline-flex; align-items: center; gap: 14px; font-size: 13.5px; letter-spacing: -0.015em; white-space: nowrap; }
+  .wstat b { font-weight: 600; color: #fff; font-variant-numeric: tabular-nums; }
+  .wstat svg { width: 20px; height: 20px; }
+  .wstat .wide { width: 38px; height: 21px; }
+
+  /* Apparitions de l'accueil */
+  .appear { animation: var(--a, in-soft) 1.05s var(--ease) var(--d, 0.08s) both; }
+  .a-scale { --a: in-scale; }
+  .a-mask { --a: in-mask; }
+  .a-pop { --a: in-pop; }
+  .a-btn { --a: in-btn; }
+  .a-side { --a: in-side; }
+  .a-stat { --a: in-stat; }
+  .appear.is-in { animation: none; opacity: 1; transform: none; filter: none; }
+  .welcome h1 em { animation: in-em 1.2s var(--ease) 0.72s both; }
+  .welcome .badge-star { animation: in-star 0.9s var(--ease) 0.28s both; }
+  @keyframes in-scale { from { opacity: 0; transform: scale(0.84); } }
+  @keyframes in-soft { from { opacity: 0; transform: translateY(14px); } }
+  @keyframes in-mask { from { opacity: 0; transform: translateY(40%); } }
+  @keyframes in-pop { 0% { opacity: 0; transform: scale(0.9); } 70% { opacity: 1; transform: scale(1.03); } }
+  @keyframes in-btn { from { opacity: 0; transform: translateY(18px) scale(0.94); } }
+  @keyframes in-side { from { opacity: 0; transform: translateX(22px); } }
+  @keyframes in-stat { from { opacity: 0; transform: translateY(20px); } }
+  @keyframes in-star { 0% { opacity: 0; transform: scale(0.2) rotate(-50deg); } 65% { opacity: 1; transform: scale(1.2) rotate(8deg); } }
+  @keyframes in-em { from { opacity: 0.35; filter: blur(4px); } }
+
+  /* ================= Page 2 : Console ================= */
+  .view-console { min-height: 100vh; }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--topbar);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 12px 32px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 16px;
+  }
+  .tabs { display: flex; gap: 8px; }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; justify-self: end; }
+  .icon-btn {
+    display: grid;
+    place-items: center;
+    width: 38px; height: 38px;
+    border-radius: 7px;
+    border: 1px solid var(--border-strong);
+    background: var(--row);
+    cursor: pointer;
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+  }
+  .icon-btn:hover { border-color: var(--text-3); }
+  .icon-btn svg { width: 17px; height: 17px; }
+  #themeToggle .i-moon { display: none; }
+  :root[data-theme="light"] #themeToggle .i-moon { display: block; }
+  :root[data-theme="light"] #themeToggle .i-sun { display: none; }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme]) #themeToggle .i-moon { display: block; }
+    :root:not([data-theme]) #themeToggle .i-sun { display: none; }
+  }
+
+  .console {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 36px 32px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .console-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .console-head h1 {
+    font-size: clamp(32px, 3.2vw, 52px);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 1.08;
+    margin-top: 14px;
+  }
+  .console-head h1 em.serif { color: var(--text-3); }
+  .console-head p { margin-top: 8px; color: var(--text-2); font-size: 15px; letter-spacing: -0.015em; }
+  .head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .clock { font-family: var(--mono); font-size: 12.5px; color: var(--text-3); margin-bottom: 10px; text-align: right; }
+
+  .glass {
+    position: relative;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    box-shadow: var(--glass-hi);
+    transition: border-color 0.35s ease, box-shadow 0.35s ease;
+  }
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid var(--row-border);
+  }
+  .card-head h2 { display: inline-flex; align-items: center; gap: 10px; font-size: 14.5px; font-weight: 500; letter-spacing: -0.02em; }
+  .card-head h2 svg { width: 16px; height: 16px; color: var(--text-2); }
+  .count { font-size: 12px; color: var(--text-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* KPI */
+  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+  .kpi { padding: 20px 22px 18px; overflow: hidden; }
+  .kpi .label { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--text-2); }
+  .kpi .label svg { width: 16px; height: 16px; color: var(--text-3); }
+  .kpi .num {
+    margin-top: 14px;
+    font-size: clamp(40px, 3.6vw, 60px);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi .sub { margin-top: 8px; font-size: 12px; color: var(--text-3); }
+  .kpi.is-hot { border-color: rgba(255, 77, 94, 0.45); box-shadow: var(--glass-hi), 0 0 40px -12px rgba(255, 77, 94, 0.55); }
+  .kpi.is-hot .num { color: var(--crit); }
+
+  /* Grille principale */
+  .grid-main { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 14px; }
+  .stack { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+  /* Graphe réseau */
+  .net-card { display: flex; flex-direction: column; min-height: 420px; }
+  .net { flex: 1; width: 100%; min-height: 340px; padding: 6px 10px 12px; overflow: visible; }
+  .net .link { stroke: var(--link); stroke-width: 1; transition: stroke 0.4s ease; }
+  .net .link.is-hot { stroke: var(--text-2); }
+  .net .node-body { fill: var(--node-fill); stroke: var(--node-stroke); stroke-width: 1; transition: stroke 0.3s ease, fill 0.3s ease; }
+  .net .node.is-hit .node-body { stroke: var(--text); }
+  .net .node.is-high .node-body { stroke: var(--high); fill: rgba(242, 107, 29, 0.18); }
+  .net .node.is-crit .node-body { stroke: var(--crit); fill: rgba(255, 77, 94, 0.2); }
+  .net .node-label { fill: var(--text-3); font: 10.5px var(--mono); }
+  .net .node-count { fill: var(--text); font: 600 10.5px var(--font); }
+  .net .core-body { fill: url(#coreGrad); stroke: rgba(255, 255, 255, 0.55); stroke-width: 1; }
+  .net .core-halo { fill: url(#haloGrad); transform-box: fill-box; transform-origin: center; animation: breathe 4s ease-in-out infinite; }
+  .net .core.is-high .core-body { stroke: var(--high); stroke-width: 1.6; }
+  .net .core.is-crit .core-body { stroke: var(--crit); stroke-width: 1.6; }
+  .net .pulse { fill: #fff; filter: url(#glow); }
+  :root[data-theme="light"] .net .pulse { fill: #1f5eff; }
+  .net .wave { fill: none; stroke-width: 1.5; vector-effect: non-scaling-stroke; transform-box: fill-box; transform-origin: center; animation: wave 1.6s var(--ease) forwards; }
+  @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.12); opacity: 1; } }
+  @keyframes wave { from { transform: scale(1); opacity: 0.95; } to { transform: scale(5.5); opacity: 0; } }
+  .net-legend { display: flex; gap: 16px; flex-wrap: wrap; padding: 0 18px 14px; font-size: 12px; color: var(--text-3); }
+  .net-legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .net-legend i { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* Fréquence */
+  .freq { padding: 16px 18px 18px; }
+  .freq-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+  .freq-top .title { font-size: 14.5px; font-weight: 500; letter-spacing: -0.02em; display: inline-flex; align-items: center; gap: 10px; }
+  .freq-value { display: flex; align-items: baseline; gap: 8px; }
+  .freq-value .num { font-size: 32px; font-weight: 500; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+  .freq-value .lbl { font-size: 11.5px; color: var(--text-3); max-width: 13em; line-height: 1.35; }
+  .freq-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 96px;
+    margin-top: 14px;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .freq-bar {
+    flex: 1 1 0;
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.85));
+    transform-origin: 50% 100%;
+    transform: scaleY(0.15);
+    will-change: transform;
+    transition: background 0.35s ease;
+  }
+  :root[data-theme="light"] .freq-bar { background: linear-gradient(to top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)); }
+  .freq-bar.spike { background: linear-gradient(to top, var(--high), var(--crit)); }
+
+  /* Terminal (toujours sombre) */
+  .terminal {
+    padding: 0;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(20, 20, 24, 0.96), rgba(4, 4, 6, 0.98));
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #e6e6e6;
+  }
+  .terminal .card-head { border-bottom-color: rgba(255, 255, 255, 0.08); }
+  .terminal .card-head h2, .terminal .card-head h2 svg { color: #e6e6e6; }
+  .term-body {
+    padding: 12px 18px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.7;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .term-history { list-style: none; color: #8a8a8a; }
+  .term-history li, .terminal-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .terminal-line .dim, .term-history .dim { color: #8a8a8a; }
+  .terminal-line .warn { color: #ff6b7a; }
+  .caret { animation: caret 1.05s steps(2, start) infinite; }
+  @keyframes caret { to { visibility: hidden; } }
+
+  /* Flux */
+  .feeds { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .feed { display: flex; flex-direction: column; min-width: 0; }
+  .feed-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    height: 460px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  .empty {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-3);
+  }
+  .empty svg { width: 30px; height: 30px; }
+
+  .row {
+    flex-shrink: 0;
+    border-radius: 9px;
+    padding: 11px 12px;
+    background: var(--row);
+    border: 1px solid var(--row-border);
+    font-size: 13px;
+    animation: row-in 0.55s var(--ease);
+  }
+  .row.is-leaving { animation: row-out 0.22s ease forwards; }
+  @keyframes row-in { from { opacity: 0; transform: translateY(-8px); filter: blur(3px); } }
+  @keyframes row-out { to { opacity: 0; transform: translateX(14px); } }
+
+  .alert { display: flex; gap: 12px; align-items: flex-start; }
+  .alert.high { border-color: rgba(242, 107, 29, 0.42); background: rgba(242, 107, 29, 0.08); }
+  .alert.critical { border-color: rgba(255, 77, 94, 0.5); background: rgba(255, 77, 94, 0.09); animation: row-in 0.55s var(--ease), crit-glow 2.4s var(--ease); }
+  @keyframes crit-glow { 25% { box-shadow: 0 0 0 1px rgba(255, 77, 94, 0.6), 0 0 32px -6px rgba(255, 77, 94, 0.7); } }
+  .alert-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--row); color: var(--text-2); flex-shrink: 0; }
+  .alert.high .alert-icon { color: var(--high); }
+  .alert.critical .alert-icon { color: var(--crit); }
+  .alert-icon svg { width: 16px; height: 16px; }
+  .alert-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .alert-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .alert-title { font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em; overflow-wrap: anywhere; }
+  .alert-msg { color: var(--text-2); line-height: 1.45; overflow-wrap: anywhere; }
+  .alert-meta { font-family: var(--mono); font-size: 11px; color: var(--text-3); overflow-wrap: anywhere; }
+  .severity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .severity-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .severity-badge.high { color: var(--high); }
+  .severity-badge.critical { color: var(--crit); }
+  .close {
+    display: grid;
+    place-items: center;
+    width: 30px; height: 30px;
+    margin: -4px -4px 0 auto;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--text-3);
+    cursor: pointer;
+  }
+  .close:hover { background: var(--row); color: var(--text); }
+  .close svg { width: 13px; height: 13px; }
+
+  .ai-analysis {
+    display: flex;
+    gap: 10px;
+    margin-left: 18px;
+    line-height: 1.5;
+    color: var(--text-2);
+    border-color: rgba(143, 176, 255, 0.28);
+    background: rgba(143, 176, 255, 0.06);
+    overflow-wrap: anywhere;
+  }
+  .ai-analysis svg { width: 16px; height: 16px; margin-top: 2px; color: #8fb0ff; }
+  .ai-analysis strong { color: var(--text); font-weight: 500; }
+
+  .event { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .event-main { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; min-width: 0; }
+  .event .machine { font-family: var(--mono); font-size: 12px; color: var(--text); }
+  .event .arrow { color: var(--text-3); }
+  .event-type { font-family: var(--mono); font-size: 11.5px; color: var(--text-2); overflow-wrap: anywhere; }
+  .event-type.is-fail { color: var(--high); }
+  .user-tag { font-size: 12px; color: var(--text-3); overflow-wrap: anywhere; }
+  .event .time { font-family: var(--mono); font-size: 11px; color: var(--text-3); white-space: nowrap; }
+
+  /* Toast d'alerte (visible depuis l'accueil) */
+  .toast {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: min(420px, calc(100vw - 32px));
+    padding: 14px 14px 14px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 77, 94, 0.5);
+    background: linear-gradient(135deg, rgba(40, 10, 14, 0.92), rgba(8, 8, 10, 0.95));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: #fff;
+    box-shadow: 0 20px 50px -20px rgba(255, 77, 94, 0.5);
+    font-size: 13.5px;
+    line-height: 1.4;
+    transform: translateY(20px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s var(--ease), transform 0.5s var(--ease), visibility 0.35s;
+  }
+  .toast.is-on { opacity: 1; transform: none; visibility: visible; }
+  .toast.is-high { border-color: rgba(242, 107, 29, 0.5); box-shadow: 0 20px 50px -20px rgba(242, 107, 29, 0.5); }
+  .toast p { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .toast p b { display: block; font-weight: 600; }
+  .toast .btn { height: 34px; flex-shrink: 0; }
+
+  /* ================= Responsive ================= */
+  @media (max-width: 1100px) {
+    .grid-main, .feeds { grid-template-columns: 1fr; }
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 900px) {
+    .welcome-header { grid-template-columns: 1fr auto; padding: 16px 18px 10px; }
+    .welcome-nav { display: none; }
+    .welcome-hero { padding: 20px 20px 56px; }
+    .welcome-stats { flex-direction: column; gap: 14px; padding: 0 20px 28px; }
+    .wstat { white-space: normal; }
+    .kbd-hint { display: none; }
+    .topbar-inner { grid-template-columns: 1fr auto; padding: 10px 16px; }
+    .tabs { display: none; }
+    .console { padding: 24px 16px 48px; }
+    .topbar-actions .status-pill { max-width: 150px; overflow: hidden; }
+    .topbar-actions .status-pill span:last-child { overflow: hidden; text-overflow: ellipsis; }
+    .feed-body { height: 380px; }
+  }
+  @media (max-width: 560px) {
+    .welcome-actions { flex-direction: column; width: 100%; }
+    .welcome-actions .btn { width: 100%; }
+    .kpis { gap: 10px; }
+    .kpi { padding: 16px; }
+    .head-actions, .head-actions .btn { width: 100%; }
+    .topbar-actions .status-pill { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .appear, .hero-photo, .welcome h1 em, .badge-star { opacity: 1; transform: none; filter: none; }
+  }
+</style>
+</head>
+<body data-view="welcome">
+
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ======================= Page 1 : Accueil ======================= -->
+<section class="view view-welcome" id="viewWelcome" aria-label="Accueil">
+  <div class="hero-photo" aria-hidden="true">
+    <video id="heroVideo" autoplay muted loop playsinline preload="auto">
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260818_072341_50851634-bbc3-4c33-9acc-7647d4db44aa.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <div class="welcome">
+    <header class="welcome-header">
+      <a class="logo appear a-scale" href="#accueil" style="--d:0.08s" aria-label="MiniSOC">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 19.5 5.5v6c0 4.7-3.2 8.5-7.5 10-4.3-1.5-7.5-5.3-7.5-10v-6z"/><circle cx="12" cy="11.5" r="2.4" fill="currentColor"/></svg>
+        <span>Mini<span class="logo-suffix">SOC</span></span>
+      </a>
+      <nav class="welcome-nav" aria-label="Raccourcis">
+        <a class="pill appear a-scale" href="#console" style="--d:0.16s">Console</a>
+        <button class="pill appear a-soft" type="button" style="--d:0.28s" onclick="launchAttackScenario()">Simulation</button>
+        <button class="pill appear a-scale" type="button" style="--d:0.40s" onclick="generateReport()">Rapport</button>
+      </nav>
+      <div class="status-pill appear a-scale" id="welcomeStatus" style="--d:0.34s" role="status"><span class="dot" aria-hidden="true"></span><span id="welcomeStatusText">Connexion...</span></div>
+    </header>
+
+    <main class="welcome-hero">
+      <div class="welcome-copy">
+        <span class="badge appear a-pop" style="--d:0.22s">
+          <svg class="badge-star" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.6C12.55 2.6 12.88 3.15 13.08 4.7c.62 4.7 1.52 5.6 6.22 6.22 1.55.2 2.1.53 2.1 1.08s-.55.88-2.1 1.08c-4.7.62-5.6 1.52-6.22 6.22-.2 1.55-.53 2.1-1.08 2.1s-.88-.55-1.08-2.1c-.62-4.7-1.52-5.6-6.22-6.22C3.15 12.88 2.6 12.55 2.6 12s.55-.88 2.1-1.08c4.7-.62 5.6-1.52 6.22-6.22C11.12 3.15 11.45 2.6 12 2.6Z"/></svg>
+          <span id="welcomeGreeting">Bonjour</span>
+        </span>
+        <h1>
+          <span class="headline-line"><span class="appear a-mask" style="--d:0.42s">Bienvenue sur</span></span>
+          <span class="headline-line"><span class="appear a-mask" style="--d:0.62s">votre <em class="serif">MiniSOC.</em></span></span>
+        </h1>
+        <p class="welcome-lede appear" style="--d:0.82s" id="welcomeSummary">
+          Votre infrastructure est sous surveillance. Le centre de sécurité est prêt.
+        </p>
+        <div class="welcome-actions">
+          <a class="btn btn-solid appear a-btn" href="#console" style="--d:0.96s">
+            Entrer dans la console
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <button class="btn btn-ghost btn-frost appear a-side" type="button" style="--d:1.10s" onclick="launchAttackScenario()">Lancer une simulation</button>
+        </div>
+        <p class="kbd-hint appear" style="--d:1.2s">Appuyez sur <kbd>Entrée</kbd> pour ouvrir la console</p>
+      </div>
+    </main>
+
+    <footer class="welcome-stats" aria-label="Résumé en direct">
+      <div class="wstat appear a-stat" style="--d:1.12s">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <defs>
+            <linearGradient id="pillL" x1="3" y1="2" x2="14" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset="1" stop-color="#3a3a3a" stop-opacity=".62"/></linearGradient>
+            <linearGradient id="pillR" x1="13" y1="2" x2="24" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#3a3a3a" stop-opacity=".38"/><stop offset="1" stop-color="#fff" stop-opacity=".62"/></linearGradient>
+          </defs>
+          <rect x="3.4" y="2.6" width="7.2" height="18.8" rx="3.6" fill="url(#pillL)"/>
+          <rect x="13.4" y="2.6" width="7.2" height="18.8" rx="3.6" fill="url(#pillR)"/>
+          <rect x="9.2" y="10.9" width="5.6" height="2.2" rx="1.1" fill="#4a4a4a"/>
+        </svg>
+        <span><b id="wEvents">0</b> événements reçus</span>
+      </div>
+      <div class="wstat appear a-stat" style="--d:1.28s">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2.4" y="2.4" width="19.2" height="19.2" rx="6.2" fill="#fff"/>
+          <path d="M12 7v6M12 16.6v.01" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span><b id="wAlerts">0</b> alertes · <b id="wCritical">0</b> critiques</span>
+      </div>
+      <div class="wstat appear a-stat" style="--d:1.44s">
+        <svg class="wide" viewBox="0 0 40 22" aria-hidden="true">
+          <circle cx="10.2" cy="11" r="9.2" fill="#2b2b2b"/>
+          <rect x="6.4" y="7.2" width="7.6" height="5.4" rx="1" fill="none" stroke="#f4f4f4" stroke-width="1.3"/>
+          <path d="M8.2 15h4" stroke="#f4f4f4" stroke-width="1.3" stroke-linecap="round"/>
+          <circle cx="20.2" cy="11" r="9.2" fill="#fff"/>
+          <rect x="16.4" y="7.2" width="7.6" height="5.4" rx="1" fill="none" stroke="#111" stroke-width="1.3"/>
+          <path d="M18.2 15h4" stroke="#111" stroke-width="1.3" stroke-linecap="round"/>
+          <circle cx="30.2" cy="11" r="9.2" fill="#f26b1d"/>
+          <path d="M26.4 11.2l2.6 2.6 5-5.2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span><b id="wMachines">5</b> machines actives</span>
+      </div>
+    </footer>
+  </div>
+</section>
+
+<!-- ======================= Page 2 : Console ======================= -->
+<section class="view view-console" id="viewConsole" aria-label="Console" hidden>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="logo" href="#accueil" aria-label="MiniSOC, retour à l'accueil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 19.5 5.5v6c0 4.7-3.2 8.5-7.5 10-4.3-1.5-7.5-5.3-7.5-10v-6z"/><circle cx="12" cy="11.5" r="2.4" fill="currentColor"/></svg>
+        <span>Mini<span class="logo-suffix">SOC</span></span>
+      </a>
+      <nav class="tabs" aria-label="Pages">
+        <a class="pill" href="#accueil">Accueil</a>
+        <a class="pill" href="#console" aria-current="page">Console</a>
+      </nav>
+      <div class="topbar-actions">
+        <div class="status-pill" id="connStatus" role="status"><span class="dot" aria-hidden="true"></span><span id="connStatusText">Connexion...</span></div>
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Changer de thème">
+          <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="console">
+    <div class="console-head">
+      <div>
+        <span class="badge">
+          <span class="live-dot" id="headDot" aria-hidden="true"></span>
+          Console de supervision
+        </span>
+        <h1>Vue <em class="serif">d'ensemble</em></h1>
+        <p id="consoleSummary">Ce qui se passe sur votre infrastructure, là, maintenant.</p>
+      </div>
+      <div>
+        <div class="clock" id="clock" aria-hidden="true"></div>
+        <div class="head-actions">
+          <button class="btn btn-ghost" type="button" id="simBtn" onclick="launchAttackScenario()">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+            Lancer un scénario d'attaque
+          </button>
+          <button class="btn btn-solid" type="button" onclick="generateReport()">
+            Exporter le rapport
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpis" aria-live="polite">
+      <div class="kpi glass">
+        <div class="label">Événements reçus<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <div class="num" id="statEvents">0</div>
+        <div class="sub">depuis l'ouverture de la session</div>
+      </div>
+      <div class="kpi glass">
+        <div class="label">Alertes déclenchées<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></svg></div>
+        <div class="num" id="statAlerts">0</div>
+        <div class="sub">toutes gravités</div>
+      </div>
+      <div class="kpi glass" id="kpiCritical">
+        <div class="label">Alertes critiques<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></div>
+        <div class="num" id="statCritical">0</div>
+        <div class="sub" id="critSub">aucune à traiter</div>
+      </div>
+      <div class="kpi glass">
+        <div class="label">Machines actives<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div>
+        <div class="num" id="statMachines">5</div>
+        <div class="sub">reliées au serveur central</div>
+      </div>
+    </div>
+
+    <div class="grid-main">
+      <section class="glass net-card" aria-labelledby="netTitle">
+        <div class="card-head">
+          <h2 id="netTitle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="6" r="1.6"/><circle cx="20" cy="6" r="1.6"/><circle cx="4" cy="18" r="1.6"/><circle cx="20" cy="18" r="1.6"/><path d="M5.4 6.9 9.5 10.4M18.6 6.9l-4.1 3.5M5.4 17.1l4.1-3.5M18.6 17.1l-4.1-3.5"/></svg>Carte du réseau</h2>
+          <span class="count">temps réel</span>
+        </div>
+        <svg class="net" id="net" viewBox="0 0 600 360" role="img" aria-label="Le serveur central et les machines surveillées">
+          <defs>
+            <radialGradient id="coreGrad" cx="35%" cy="30%"><stop offset="0" stop-color="#5a5a5a"/><stop offset="1" stop-color="#0a0a0a"/></radialGradient>
+            <radialGradient id="haloGrad"><stop offset="0" stop-color="#8fa8ff" stop-opacity=".25"/><stop offset="1" stop-color="#8fa8ff" stop-opacity="0"/></radialGradient>
+            <filter id="glow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <g id="netLinks"></g>
+          <g id="netNodes"></g>
+          <g class="core" id="netCore">
+            <circle class="core-halo" cx="300" cy="180" r="66"/>
+            <circle class="core-body" cx="300" cy="180" r="30"/>
+            <path d="M300 165l11 4.2v8.2c0 6.6-4.5 11.9-11 14.1-6.5-2.2-11-7.5-11-14.1v-8.2z" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
+          </g>
+          <g id="netFx"></g>
+        </svg>
+        <div class="net-legend" aria-hidden="true">
+          <span><i style="background:#fff"></i>Événement</span>
+          <span><i style="background:var(--high)"></i>Alerte haute</span>
+          <span><i style="background:var(--crit)"></i>Alerte critique</span>
+        </div>
+      </section>
+
+      <div class="stack">
+        <section class="glass freq" id="freqShell" aria-label="Trafic surveillé">
+          <div class="freq-top">
+            <span class="title"><span class="live-dot" aria-hidden="true"></span>Trafic surveillé</span>
+            <div class="freq-value"><div class="num" id="freqRate">72</div><div class="lbl">paquets analysés / min (simulé)</div></div>
+          </div>
+          <div class="freq-bars" id="freqBars" aria-hidden="true"></div>
+        </section>
+
+        <section class="glass terminal" aria-label="Flux brut">
+          <div class="card-head">
+            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 7 5 5-5 5M12 19h7"/></svg>minisoc — flux central</h2>
+            <span class="count" style="color:#3ddc84">live</span>
+          </div>
+          <div class="term-body">
+            <ul class="term-history" id="termHistory" aria-hidden="true"></ul>
+            <div class="terminal-line" id="terminalLine"><span class="dim">en attente d'événements</span><span class="caret" aria-hidden="true">▍</span></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="feeds">
+      <section class="glass feed" aria-labelledby="alertsTitle">
+        <div class="card-head">
+          <h2 id="alertsTitle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></svg>Alertes</h2>
+          <span class="count" id="alertsCount">0 active(s)</span>
+        </div>
+        <div class="feed-body" id="alerts" aria-live="polite" aria-relevant="additions">
+          <div class="empty" id="alertsEmpty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 19.5 5.5v6c0 4.7-3.2 8.5-7.5 10-4.3-1.5-7.5-5.3-7.5-10v-6z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>Aucune alerte pour le moment.<br>Le signal est stable.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="glass feed" aria-labelledby="eventsTitle">
+        <div class="card-head">
+          <h2 id="eventsTitle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Flux d'événements</h2>
+          <span class="count" id="eventsCount">0 reçu(s)</span>
+        </div>
+        <div class="feed-body" id="events">
+          <div class="empty" id="eventsEmpty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <span>En attente du premier événement...</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</section>
+
+<div class="toast" id="toast" role="alert" aria-live="assertive">
+  <p><b id="toastTitle">Alerte</b><span id="toastText"></span></p>
+  <a class="btn btn-solid" href="#console">Ouvrir</a>
+</div>
+
+<script>
+  /* =====================================================================
+     MiniSOC — front-end
+     Logique d'origine conservée : WebSocket ws://localhost:4000,
+     new_event / new_alert / alert_analysis, POST /simulate-attack,
+     generateReport(), launchAttackScenario(), thème + localStorage.
+     Les données reçues ne passent jamais par innerHTML.
+     ===================================================================== */
+
+  const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Utilitaires DOM ---------- */
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined && text !== null) node.textContent = String(text);
+    return node;
+  }
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  function svgEl(tag, attrs) {
+    const n = document.createElementNS(SVGNS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+  // Icônes : chaînes constantes, jamais de données externes
+  const ICONS = {
+    alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></svg>',
+    network: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M7.2 7.4 10.6 16M16.8 7.4 13.4 16M7.5 6h9"/></svg>',
+    spark: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.6C12.55 2.6 12.88 3.15 13.08 4.7c.62 4.7 1.52 5.6 6.22 6.22 1.55.2 2.1.53 2.1 1.08s-.55.88-2.1 1.08c-4.7.62-5.6 1.52-6.22 6.22-.2 1.55-.53 2.1-1.08 2.1s-.88-.55-1.08-2.1c-.62-4.7-1.52-5.6-6.22-6.22C3.15 12.88 2.6 12.55 2.6 12s.55-.88 2.1-1.08c4.7-.62 5.6-1.52 6.22-6.22C11.12 3.15 11.45 2.6 12 2.6Z"/></svg>',
+    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>'
+  };
+  const iconCache = {};
+  function icon(name) {
+    if (!iconCache[name]) {
+      const tpl = document.createElement('template');
+      tpl.innerHTML = ICONS[name]; // constante locale uniquement
+      iconCache[name] = tpl.content.firstElementChild;
+    }
+    return iconCache[name].cloneNode(true);
+  }
+
+  /* ================= Navigation entre les deux pages ================= */
+  const views = { accueil: document.getElementById('viewWelcome'), console: document.getElementById('viewConsole') };
+  let currentView = null;
+  function showView(name) {
+    if (!views[name]) name = 'accueil';
+    if (name === currentView) return;
+    const next = views[name];
+    const prev = currentView ? views[currentView] : null;
+    currentView = name;
+    document.body.dataset.view = name === 'console' ? 'console' : 'welcome';
+    document.title = name === 'console' ? 'MiniSOC — Console' : 'MiniSOC — Bienvenue';
+    const reveal = () => {
+      if (prev) { prev.hidden = true; prev.classList.remove('is-leaving'); }
+      next.hidden = false;
+      window.scrollTo(0, 0);
+      if (!reduceMotion()) {
+        next.classList.add('is-entering');
+        setTimeout(() => next.classList.remove('is-entering'), 800);
+      }
+      if (name === 'console') { hideToast(); netResize(); }
+      const video = document.getElementById('heroVideo');
+      if (video) { if (name === 'accueil' && !reduceMotion()) video.play().catch(() => {}); else video.pause(); }
+    };
+    if (prev && !reduceMotion()) {
+      prev.classList.add('is-leaving');
+      setTimeout(reveal, 450);
+    } else {
+      reveal();
+    }
+  }
+  const route = () => showView((location.hash || '#accueil').slice(1));
+  window.addEventListener('hashchange', route);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && currentView === 'accueil' && !e.target.closest('a, button, input, textarea')) location.hash = 'console';
+  });
+
+  // Animations d'entrée de l'accueil : .is-in à la fin (et repli si elles ne tournent pas)
+  document.querySelectorAll('.appear').forEach(node => {
+    node.addEventListener('animationend', e => { if (e.target === node) node.classList.add('is-in'); }, { once: true });
+  });
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const probe = document.querySelector('.appear');
+    const ok = probe && probe.getAnimations && probe.getAnimations().some(a => a.playState === 'running' || a.playState === 'finished');
+    if (!ok && !views.accueil.hidden) document.querySelectorAll('.appear').forEach(n => n.classList.add('is-in'));
+  }));
+
+  /* ================= Horloge et salutation ================= */
+  function greeting() {
+    const h = new Date().getHours();
+    return h < 5 ? 'Bonne nuit' : h < 18 ? 'Bonjour' : 'Bonsoir';
+  }
+  function tickClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) + ' · ' + now.toLocaleTimeString('fr-FR');
+  }
+  document.getElementById('welcomeGreeting').textContent = greeting() + ' · votre centre de sécurité';
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  /* ================= Analyseur de fréquence ================= */
+  const freqShell = document.getElementById('freqShell');
+  const freqBarsEl = document.getElementById('freqBars');
+  const NUM_BARS = window.innerWidth < 768 ? 36 : 56;
+  const FREQ_MAX = 130;
+  const freqBars = [];
+  for (let i = 0; i < NUM_BARS; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'freq-bar';
+    freqBarsEl.appendChild(bar);
+    freqBars.push(bar);
+  }
+  function setBar(bar, h) { bar.style.transform = 'scaleY(' + Math.min(1, h / FREQ_MAX).toFixed(3) + ')'; }
+  freqBars.forEach((bar, i) => setBar(bar, 10 + Math.abs(Math.sin(i * 0.35)) * 40));
+  let freqPhase = 0;
+  let freqRaf = 0;
+  function animateFreq() {
+    freqRaf = 0;
+    if (currentView !== 'console' || document.hidden || reduceMotion()) return;
+    freqPhase += 0.09;
+    freqBars.forEach((bar, i) => {
+      if (!bar.classList.contains('spike')) setBar(bar, 10 + Math.abs(Math.sin(freqPhase + i * 0.35)) * 40 + Math.random() * 8);
+    });
+    freqRaf = requestAnimationFrame(animateFreq);
+  }
+  function startFreq() { if (!freqRaf) freqRaf = requestAnimationFrame(animateFreq); }
+  window.addEventListener('hashchange', () => setTimeout(startFreq, 500));
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) startFreq(); });
+  function spikeFreq() {
+    freqBars.forEach(bar => { bar.classList.add('spike'); setBar(bar, 90 + Math.random() * 40); });
+    setTimeout(() => freqBars.forEach(bar => bar.classList.remove('spike')), 350);
+  }
+
+  /* ================= Compteurs animés ================= */
+  const countAnim = new WeakMap();
+  function animateCount(node, to) {
+    const from = Number(node.dataset.value ?? node.textContent) || 0;
+    node.dataset.value = to;
+    cancelAnimationFrame(countAnim.get(node) || 0);
+    if (reduceMotion() || from === to || document.hidden) { node.textContent = to; return; }
+    const start = performance.now();
+    const dur = Math.min(1100, 400 + Math.abs(to - from) * 80);
+    const step = now => {
+      const t = Math.min(1, (now - start) / dur);
+      node.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - t, 4)));
+      if (t < 1) countAnim.set(node, requestAnimationFrame(step));
+    };
+    countAnim.set(node, requestAnimationFrame(step));
+  }
+
+  /* ================= Carte du réseau ================= */
+  const CORE = { x: 300, y: 180 };
+  const linksG = document.getElementById('netLinks');
+  const nodesG = document.getElementById('netNodes');
+  const fxG = document.getElementById('netFx');
+  const coreG = document.getElementById('netCore');
+  const netNodes = new Map();
+
+  function layoutNodes() {
+    const list = [...netNodes.values()];
+    list.forEach((n, i) => {
+      const a = -Math.PI / 2 + (i / list.length) * Math.PI * 2;
+      n.x = CORE.x + Math.cos(a) * 225;
+      n.y = CORE.y + Math.sin(a) * 135;
+      n.line.setAttribute('x2', n.x);
+      n.line.setAttribute('y2', n.y);
+      n.body.setAttribute('cx', n.x);
+      n.body.setAttribute('cy', n.y);
+      n.count.setAttribute('x', n.x);
+      n.count.setAttribute('y', n.y + 3.8);
+      n.label.setAttribute('x', n.x);
+      n.label.setAttribute('y', n.y + (n.y > CORE.y + 5 ? 32 : -24));
+    });
+  }
+  function addNode(name) {
+    if (netNodes.has(name)) return netNodes.get(name);
+    const line = svgEl('line', { 'class': 'link', x1: CORE.x, y1: CORE.y, x2: CORE.x, y2: CORE.y });
+    linksG.appendChild(line);
+    const g = svgEl('g', { 'class': 'node' });
+    const body = svgEl('circle', { 'class': 'node-body', r: 16 });
+    const count = svgEl('text', { 'class': 'node-count', 'text-anchor': 'middle' });
+    count.textContent = '0';
+    const label = svgEl('text', { 'class': 'node-label', 'text-anchor': 'middle' });
+    label.textContent = String(name).slice(0, 24);
+    g.append(body, count, label);
+    nodesG.appendChild(g);
+    const n = { name, line, g, body, count, label, hits: 0, x: CORE.x, y: CORE.y };
+    netNodes.set(name, n);
+    layoutNodes();
+    return n;
+  }
+  const flashTimers = new WeakMap();
+  function flash(target, cls, ms) {
+    target.classList.add(cls);
+    const timers = flashTimers.get(target) || {};
+    clearTimeout(timers[cls]);
+    timers[cls] = setTimeout(() => target.classList.remove(cls), ms);
+    flashTimers.set(target, timers);
+  }
+  function pulseFrom(n) {
+    flash(n.g, 'is-hit', 500);
+    flash(n.line, 'is-hot', 700);
+    if (reduceMotion() || currentView !== 'console' || document.hidden) return;
+    const dot = svgEl('circle', { 'class': 'pulse', r: 3.6, cx: n.x, cy: n.y });
+    fxG.appendChild(dot);
+    const start = performance.now();
+    const step = now => {
+      const t = Math.min(1, (now - start) / 850);
+      const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      dot.setAttribute('cx', (n.x + (CORE.x - n.x) * e).toFixed(1));
+      dot.setAttribute('cy', (n.y + (CORE.y - n.y) * e).toFixed(1));
+      if (t < 1) requestAnimationFrame(step); else dot.remove();
+    };
+    requestAnimationFrame(step);
+  }
+  function shockwave(color) {
+    if (reduceMotion() || currentView !== 'console') return;
+    [0, 260].forEach(delay => setTimeout(() => {
+      const ring = svgEl('circle', { 'class': 'wave', cx: CORE.x, cy: CORE.y, r: 30, stroke: color });
+      fxG.appendChild(ring);
+      setTimeout(() => ring.remove(), 1700);
+    }, delay));
+  }
+  function netResize() { /* le SVG est responsive via viewBox ; point d'extension */ }
+
+  /* ================= Suivi des machines actives ================= */
+  const knownMachines = new Set(['machine-01','machine-02','machine-03','machine-04','machine-05']);
+  knownMachines.forEach(addNode);
+
+  /* ================= Terminal live ================= */
+  const terminalLine = document.getElementById('terminalLine');
+  const termHistory = document.getElementById('termHistory');
+  let termPrev = null;
+  function renderTerm(target, entry, caret) {
+    target.replaceChildren(el('span', 'dim', '[' + entry.time + ']'), document.createTextNode(' '));
+    if (entry.isAlert) target.append(el('span', 'warn', '⚠ '));
+    target.append(document.createTextNode(entry.text));
+    if (caret) {
+      const c = el('span', 'caret', '▍');
+      c.setAttribute('aria-hidden', 'true');
+      target.append(c);
+    }
+  }
+  function pushTerminalLine(text, isAlert) {
+    const entry = { time: new Date().toLocaleTimeString('fr-FR'), text: String(text), isAlert: !!isAlert };
+    if (termPrev) {
+      const li = document.createElement('li');
+      renderTerm(li, termPrev, false);
+      termHistory.append(li);
+      while (termHistory.children.length > 5) termHistory.firstElementChild.remove();
+    }
+    termPrev = entry;
+    renderTerm(terminalLine, entry, true);
+  }
+
+  /* ================= Toast (alerte vue depuis l'accueil) ================= */
+  const toast = document.getElementById('toast');
+  let toastTimer = 0;
+  function showToast(sev, title, text) {
+    if (currentView === 'console') return;
+    toast.classList.toggle('is-high', sev !== 'critical');
+    document.getElementById('toastTitle').textContent = title;
+    document.getElementById('toastText').textContent = text;
+    toast.classList.add('is-on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 7000);
+  }
+  function hideToast() { toast.classList.remove('is-on'); }
+
+  /* ================= Dashboard logic (fonctionnalités d'origine) ================= */
+  const eventsDiv = document.getElementById('events');
+  const alertsDiv = document.getElementById('alerts');
+  const connStatus = document.getElementById('connStatus');
+  const connStatusText = document.getElementById('connStatusText');
+  let ws = null;
+  let incidentLog = [];
+  let counts = { events: 0, alerts: 0, critical: 0 };
+  const SEVERITIES = ['low', 'medium', 'high', 'critical'];
+
+  function updateStats() {
+    const machines = Math.max(5, knownMachines.size);
+    animateCount(document.getElementById('statEvents'), counts.events);
+    animateCount(document.getElementById('statAlerts'), counts.alerts);
+    animateCount(document.getElementById('statCritical'), counts.critical);
+    animateCount(document.getElementById('statMachines'), machines);
+    document.getElementById('wEvents').textContent = counts.events;
+    document.getElementById('wAlerts').textContent = counts.alerts;
+    document.getElementById('wCritical').textContent = counts.critical;
+    document.getElementById('wMachines').textContent = machines;
+    document.getElementById('kpiCritical').classList.toggle('is-hot', counts.critical > 0);
+    document.getElementById('critSub').textContent = counts.critical > 0 ? 'à examiner en priorité' : 'aucune à traiter';
+
+    const summary = document.getElementById('welcomeSummary');
+    summary.replaceChildren(
+      document.createTextNode(machines + ' machines sont sous surveillance. '),
+      counts.critical > 0
+        ? el('strong', null, counts.critical + ' alerte' + (counts.critical > 1 ? 's' : '') + ' critique' + (counts.critical > 1 ? 's' : '') + ' à traiter.')
+        : document.createTextNode(counts.alerts > 0 ? counts.alerts + ' alerte(s) relevée(s), aucune critique.' : 'Aucune alerte : le signal est stable.')
+    );
+  }
+
+  function generateReport() {
+    if (incidentLog.length === 0) { alert('Aucune alerte enregistrée pour le moment.'); return; }
+    const now = new Date().toLocaleString('fr-FR');
+    let report = `# Rapport d'incident — MiniSOC\n\nGénéré le ${now}\n\n`;
+    report += `## Résumé\n\n${incidentLog.length} alerte(s) détectée(s) durant cette session.\n\n`;
+    report += `| Gravité | Type | Machine | Heure |\n|---|---|---|---|\n`;
+    incidentLog.forEach(e => {
+      const time = new Date(e.timestamp).toLocaleTimeString('fr-FR');
+      report += `| ${e.severity} | ${e.pattern} | ${e.machine} | ${time} |\n`;
+    });
+    report += `\n## Détail des alertes\n\n`;
+    incidentLog.forEach((e, i) => {
+      report += `### ${i + 1}. ${e.pattern.toUpperCase()} (${e.severity})\n\n`;
+      report += `**Machine concernée :** ${e.machine}\n\n`;
+      report += `**Description :** ${e.message}\n\n`;
+      report += `**Analyse IA :** ${e.analysis || 'Non disponible'}\n\n---\n\n`;
+    });
+    const blob = new Blob([report], { type: 'text/markdown' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'rapport-incident-minisoc.md';
+    link.click();
+  }
+
+  async function launchAttackScenario() {
+    await fetch('/simulate-attack', { method: 'POST' });
+  }
+
+  function updateAlertsCount() {
+    document.getElementById('alertsCount').textContent = alertsDiv.children.length + ' active(s)';
+  }
+  function removeRow(node) {
+    if (!node.parentNode) return;
+    if (reduceMotion()) { node.remove(); updateAlertsCount(); return; }
+    node.classList.add('is-leaving');
+    setTimeout(() => { node.remove(); updateAlertsCount(); }, 220);
+  }
+
+  function addAlertToDashboard(alertData) {
+    document.getElementById('alertsEmpty')?.remove();
+    const div = document.createElement('div');
+    const severityClass = alertData.severity || 'high';
+    const sevToken = SEVERITIES.includes(severityClass) ? severityClass : 'high';
+    div.className = 'row alert ' + sevToken;
+    div.id = 'alert-' + alertData.pattern + '-' + alertData.machine;
+
+    const iconBox = el('span', 'alert-icon');
+    iconBox.append(icon(alertData.pattern === 'lateral_movement' ? 'network' : 'alert'));
+    const body = el('div', 'alert-body');
+    const top = el('div', 'alert-top');
+    top.append(el('span', 'severity-badge ' + sevToken, severityClass), el('strong', 'alert-title', String(alertData.pattern).toUpperCase()));
+    const time = alertData.timestamp ? new Date(alertData.timestamp).toLocaleTimeString('fr-FR') : '';
+    body.append(top, el('p', 'alert-msg', alertData.message), el('span', 'alert-meta', String(alertData.machine) + (time ? ' · ' + time : '')));
+    const close = el('button', 'close');
+    close.type = 'button';
+    close.title = 'Fermer';
+    close.setAttribute('aria-label', "Fermer l'alerte");
+    close.append(icon('close'));
+    div.append(iconBox, body, close);
+    alertsDiv.prepend(div);
+    incidentLog.push({ pattern: alertData.pattern, severity: alertData.severity, machine: alertData.machine, message: alertData.message, timestamp: alertData.timestamp, analysis: null });
+
+    counts.alerts++;
+    if (severityClass === 'critical') counts.critical++;
+    updateStats();
+    updateAlertsCount();
+
+    spikeFreq();
+    pushTerminalLine(`ALERTE ${alertData.pattern} sur ${alertData.machine} — ${alertData.message}`, true);
+
+    // Réaction visuelle sur la carte du réseau + toast si on est sur l'accueil
+    const crit = sevToken === 'critical';
+    const n = netNodes.get(alertData.machine);
+    if (n) flash(n.g, crit ? 'is-crit' : 'is-high', crit ? 4000 : 2500);
+    flash(coreG, crit ? 'is-crit' : 'is-high', crit ? 3000 : 1800);
+    shockwave(crit ? '#ff4d5e' : '#f26b1d');
+    showToast(sevToken, (crit ? 'Alerte critique · ' : 'Alerte · ') + String(alertData.pattern).toUpperCase(), String(alertData.machine) + ' — ' + String(alertData.message));
+
+    close.addEventListener('click', () => removeRow(div));
+    const timeout = severityClass === 'critical' ? 20000 : 8000;
+    setTimeout(() => removeRow(div), timeout);
+  }
+
+  function addAnalysisToDashboard(data) {
+    const div = el('div', 'row ai-analysis');
+    const text = el('p');
+    text.append(el('strong', null, 'Analyse IA : '), document.createTextNode(String(data.analysis)));
+    div.append(icon('spark'), text);
+    const alertDiv = document.getElementById('alert-' + data.alertPattern + '-' + data.machine);
+    if (alertDiv) alertDiv.insertAdjacentElement('afterend', div);
+    else alertsDiv.prepend(div);
+    const entry = [...incidentLog].reverse().find(e => e.pattern === data.alertPattern && e.machine === data.machine && !e.analysis);
+    if (entry) entry.analysis = data.analysis;
+  }
+
+  function addEventToDashboard(event) {
+    document.getElementById('eventsEmpty')?.remove();
+    knownMachines.add(event.machine);
+    const div = el('div', 'row event');
+    const time = new Date(event.timestamp).toLocaleTimeString('fr-FR');
+    const main = el('span', 'event-main');
+    const arrow = el('span', 'arrow', '→');
+    arrow.setAttribute('aria-hidden', 'true');
+    main.append(el('span', 'machine', event.machine), arrow, el('span', 'event-type' + (/fail/i.test(String(event.type)) ? ' is-fail' : ''), event.type));
+    if (event.user) main.append(el('span', 'user-tag', '[' + event.user + ']'));
+    div.append(main, el('span', 'time', time));
+    eventsDiv.prepend(div);
+    while (eventsDiv.children.length > 50) eventsDiv.removeChild(eventsDiv.lastChild);
+
+    counts.events++;
+    updateStats();
+    document.getElementById('eventsCount').textContent = counts.events + ' reçu(s)';
+    pushTerminalLine(`${event.machine} → ${event.type}${event.user ? ' [' + event.user + ']' : ''}`, false);
+
+    const n = addNode(event.machine);
+    n.hits++;
+    n.count.textContent = String(n.hits);
+    pulseFrom(n);
+  }
+
+  function setConnStatus(state) {
+    const live = state === 'live';
+    const text = live ? 'Connecté au serveur central' : 'Déconnecté — reconnexion...';
+    [[connStatus, connStatusText], [document.getElementById('welcomeStatus'), document.getElementById('welcomeStatusText')]].forEach(([pill, label]) => {
+      pill.classList.remove('live', 'down');
+      pill.classList.add(live ? 'live' : 'down');
+      label.textContent = text;
+    });
+    document.getElementById('headDot').classList.toggle('is-down', !live);
+  }
+
+  function connect() {
+    try { ws = new WebSocket('ws://localhost:4000'); }
+    catch (e) { setConnStatus('down'); return; }
+    ws.onopen = () => setConnStatus('live');
+    ws.onerror = () => setConnStatus('down');
+    ws.onclose = () => { setConnStatus('down'); setTimeout(connect, 2000); };
+    ws.onmessage = (msg) => {
+      const data = JSON.parse(msg.data);
+      if (data.type === 'new_event') addEventToDashboard(data.event);
+      else if (data.type === 'new_alert') addAlertToDashboard(data.alert);
+      else if (data.type === 'alert_analysis') addAnalysisToDashboard(data);
+    };
+  }
+
+  /* Retour visuel sur les boutons de simulation (sans changer launchAttackScenario) */
+  document.querySelectorAll('[onclick="launchAttackScenario()"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.setAttribute('aria-busy', 'true');
+      setTimeout(() => btn.removeAttribute('aria-busy'), 4000);
+    });
+  });
+
+  /* ================= Thème clair / sombre ================= */
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const root = document.documentElement;
+    const isDark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = isDark ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('minisoc-theme', next); } catch (e) {}
+  });
+
+  /* ================= Démarrage ================= */
+  if (reduceMotion()) { const v = document.getElementById('heroVideo'); v.removeAttribute('autoplay'); v.pause(); }
+  route();
+  startFreq();
+  updateStats();
+  connect();
+</script>
+</body>
+</html>
