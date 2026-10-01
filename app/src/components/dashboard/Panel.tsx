@@ -21,7 +21,7 @@ export function Panel({
   return (
     <section
       id={id}
-      className={`scroll-mt-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 ${className}`}
+      className={`scroll-mt-6 rounded-2xl border border-white/10 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] p-5 ${className}`}
     >
       <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2 className="flex items-center gap-2 font-manrope text-[15px] font-semibold text-white">

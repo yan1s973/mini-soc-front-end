@@ -11,17 +11,12 @@ export function Hero({ onShock }: HeroProps) {
   return (
     <>
       <video
-        className="absolute inset-x-0 top-0 h-screen w-full object-cover"
+        className="fixed inset-0 h-screen w-full object-cover"
         src={VIDEO_URL}
         autoPlay
         loop
         muted
         playsInline
-        aria-hidden="true"
-      />
-      {/* Fades the video into the page so the dashboard can rise out of it. */}
-      <div
-        className="pointer-events-none absolute inset-x-0 top-[calc(100vh-12rem)] h-48 bg-gradient-to-b from-black/0 to-black"
         aria-hidden="true"
       />
 

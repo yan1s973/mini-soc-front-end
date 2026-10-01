@@ -1,5 +1,4 @@
 import {
-  HeartPulse,
   LayoutDashboard,
   Package,
   ScrollText,
@@ -29,7 +28,6 @@ const navGroups: { title: string; items: NavItem[] }[] = [
     items: [
       { id: 'leaderboard', label: 'Leaderboard AutoML', icon: Trophy },
       { id: 'modeles', label: 'Versions', icon: Package },
-      { id: 'sante', label: 'Santé de l’IA', icon: HeartPulse },
     ],
   },
 ]
@@ -41,7 +39,7 @@ type SidebarProps = {
 
 export function Sidebar({ active, onSelect }: SidebarProps) {
   return (
-    <aside className="hidden w-60 shrink-0 flex-col border-r border-white/[0.06] p-4 lg:flex">
+    <aside className="hidden w-60 shrink-0 flex-col border-r border-white/[0.08] bg-white/[0.02] p-4 lg:flex">
       <div className="flex items-center gap-2 px-2 py-2 text-white">
         <Logo className="h-6 w-6" />
         <span className="font-manrope text-base font-semibold tracking-tight">
@@ -81,7 +79,7 @@ export function Sidebar({ active, onSelect }: SidebarProps) {
         ))}
       </nav>
 
-      <div className="mt-auto rounded-xl border border-[rgba(164,132,215,0.3)] bg-primary-dark/50 p-4">
+      <div className="mt-auto rounded-xl border border-white/10 bg-white/[0.05] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
         <p className="font-manrope text-sm font-semibold text-white">
           Mode démo
         </p>

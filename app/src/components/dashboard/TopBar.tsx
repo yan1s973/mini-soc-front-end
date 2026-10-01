@@ -10,7 +10,7 @@ type TopBarProps = {
 
 export function TopBar({ now, query, onQueryChange, anomalyCount }: TopBarProps) {
   return (
-    <div className="flex flex-col gap-4 border-b border-white/[0.06] px-4 py-4 md:flex-row md:items-center md:justify-between md:px-6">
+    <div className="flex flex-col gap-4 border-b border-white/[0.08] px-4 py-4 md:flex-row md:items-center md:justify-between md:px-6">
       <div>
         <h1 className="font-manrope text-xl font-semibold text-white md:text-2xl">
           Vue d’ensemble

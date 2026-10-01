@@ -22,7 +22,7 @@ type StatProps = {
 
 function Stat({ icon: Icon, label, value, hint, compact = false }: StatProps) {
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-2xl border border-white/10 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] p-4">
       <p className="flex items-center gap-2 text-xs text-white/50">
         <Icon className="h-3.5 w-3.5 text-lavender" />
         {label}

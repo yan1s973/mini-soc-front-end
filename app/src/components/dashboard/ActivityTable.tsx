@@ -32,7 +32,7 @@ export function ActivityTable({ logs, query }: ActivityTableProps) {
     >
       <div className="max-h-[360px] overflow-auto">
         <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="sticky top-0 bg-panel text-xs text-white/40">
+          <thead className="sticky top-0 bg-black/30 text-xs text-white/40 backdrop-blur-md">
             <tr>
               <th className="py-2 pr-4 font-medium">Horodatage</th>
               <th className="py-2 pr-4 font-medium">Statut</th>

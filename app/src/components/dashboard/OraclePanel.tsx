@@ -35,7 +35,7 @@ function explain(state: OracleState): string {
 
 export function OraclePanel({ state }: { state: OracleState }) {
   return (
-    <section className="rounded-2xl bg-primary-dark/70 p-5">
+    <section className="rounded-2xl border border-primary/40 bg-primary/15 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
       <h2 className="flex items-center gap-2 font-manrope text-[15px] font-semibold text-white">
         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
           <Sparkles className="h-4 w-4 text-white" />
