@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="MiniSOC : un mini centre de sécurité qui collecte les événements de vos machines, détecte les comportements suspects et fait analyser chaque alerte par une IA locale.">
+<title>MiniSOC — Centre de sécurité pour votre infrastructure</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2.5 19.5 5.5v6c0 4.7-3.2 8.5-7.5 10-4.3-1.5-7.5-5.3-7.5-10v-6z'/%3E%3Ccircle cx='12' cy='11.5' r='2.4' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<style>
+  /* Noir immédiat : la page ne peut jamais flasher en blanc */
+  html, body { background: #000000 !important; color: #ffffff; }
+
+  /* Polices auto-hébergées si les fichiers sont à côté de index.html (sinon Google Fonts ci-dessus) */
+  @font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("inter.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Instrument Serif";
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url("instrument-serif-italic.woff2") format("woff2");
+  }
+
+  :root {
+    --bg: #000000;
+    --text: #ffffff;
+    --muted: #9a9a9a;
+    --stat: #d8d8d8;
+    --border: rgba(255, 255, 255, 0.16);
+    --border-soft: rgba(255, 255, 255, 0.12);
+
+    --high: #f26b1d;
+    --crit: #ff4d5e;
+    --ok: #3ddc84;
+
+    --font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --serif: "Instrument Serif", "Times New Roman", Times, serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+    --logo: 15.5px;
+    --logo-mark: 22px;
+    --nav: 14px;
+    --nav-h: 40px;
+    --btn: 13.5px;
+    --btn-h: 40px;
+    --hero-btn-h: 42px;
+    --h1: 48px;
+    --h2: 44px;
+    --lede: 15.5px;
+    --badge: 12.5px;
+    --stat-size: 13.5px;
+    --header-y: 22px;
+    --header-x: 40px;
+    --stats-x: 72px;
+    --stats-y: 36px;
+    --hero-gap: 85px;
+    --copy-max: 860px;
+    --lede-max: 470px;
+    --section-y: 150px;
+    --content-max: 1180px;
+  }
+
+  html, body {
+    background: #000000;
+    background: var(--bg, #000000);
+    color: #ffffff;
+    color: var(--text, #ffffff);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    position: relative;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; }
+  svg { display: block; flex-shrink: 0; }
+
+  :focus-visible {
+    outline: 2px solid #c9d6ff;
+    outline-offset: 3px;
+  }
+
+  /* ---------- Grain ---------- */
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.08;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- Vidéo du hero (100 % d'opacité, pas de voile) ---------- */
+  .hero-photo {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    z-index: 0;
+    /* repli si la vidéo ne charge pas : vague lumineuse en dégradés */
+    background:
+      radial-gradient(ellipse 38% 20% at 30% 34%, rgba(255, 255, 255, 0.55), transparent 70%),
+      radial-gradient(ellipse 30% 16% at 58% 30%, rgba(255, 255, 255, 0.42), transparent 70%),
+      radial-gradient(ellipse 34% 18% at 80% 40%, rgba(255, 255, 255, 0.35), transparent 72%),
+      radial-gradient(ellipse 70% 40% at 50% 42%, rgba(120, 120, 130, 0.25), transparent 75%),
+      #000;
+    animation: in-photo 1.6s var(--ease) both;
+  }
+  .hero-photo video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+  }
+  .hero-photo::after {
+    /* fondu tout en bas uniquement, pour enchaîner avec les sections */
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 14%;
+    background: linear-gradient(to bottom, transparent, #000);
+    pointer-events: none;
+  }
+  @keyframes in-photo { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+
+  /* ---------- Premier écran ---------- */
+  .page {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .menu-backdrop { display: none; }
+
+  /* ---------- En-tête ---------- */
+  .header {
+    position: relative;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: var(--header-y) var(--header-x) 10px;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    justify-self: start;
+    font-size: var(--logo);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: #fff;
+  }
+  .logo svg { width: var(--logo-mark); height: var(--logo-mark); }
+  .logo-suffix { font-weight: 400; }
+
+  #site-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-self: center;
+  }
+  #site-nav a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--nav-h);
+    padding: 0 18px;
+    border-radius: 7px;
+    overflow: hidden;
+    border: 1px solid rgba(198, 198, 198, 0.55);
+    background: linear-gradient(105deg, #050505 0%, #2a2a2a 48%, #4a4a4a 100%);
+    color: #f3f3f3;
+    font-size: var(--nav);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+  }
+  #site-nav a::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.16) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.6s ease;
+    pointer-events: none;
+  }
+  #site-nav a:hover {
+    border-color: rgba(235, 235, 235, 0.9);
+    background: linear-gradient(105deg, #111 0%, #3a3a3a 45%, #6a6a6a 100%);
+    box-shadow: 0 0 18px rgba(200, 210, 230, 0.18);
+  }
+  #site-nav a:hover::before { transform: translateX(120%); }
+
+  .header-end {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .burger {
+    display: none;
+    place-items: center;
+    width: 42px; height: 42px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: rgba(8, 8, 8, 0.55);
+    cursor: pointer;
+    z-index: 60;
+    transition: border-color 0.25s ease, background-color 0.25s ease;
+  }
+  .burger:hover { border-color: rgba(255, 255, 255, 0.32); background: rgba(255, 255, 255, 0.05); }
+  .burger-bars { display: grid; gap: 5px; }
+  .burger-bars span {
+    display: block;
+    width: 16px; height: 1.5px;
+    border-radius: 1px;
+    background: #fff;
+    transition: transform 0.25s ease, opacity 0.2s ease;
+  }
+  body.menu-open .burger-bars span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+  body.menu-open .burger-bars span:nth-child(2) { opacity: 0; }
+  body.menu-open .burger-bars span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+  /* ---------- Boutons (verre liquide) ---------- */
+  .btn {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: var(--btn-h);
+    padding: 0 16px;
+    border-radius: 6px;
+    font-size: var(--btn);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, color 0.35s ease, filter 0.35s ease;
+  }
+  .btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(115deg, transparent 20%, rgba(255, 255, 255, 0.45) 48%, transparent 76%);
+    transform: translateX(-130%);
+    transition: transform 0.65s ease;
+    pointer-events: none;
+  }
+  .btn:hover::after { transform: translateX(130%); }
+  .btn svg { width: 15px; height: 15px; }
+  .btn[aria-disabled="true"] { filter: saturate(0.4) brightness(0.8); cursor: progress; }
+
+  .btn-solid {
+    background: linear-gradient(180deg, #ffffff 0%, #e7e7e7 48%, #cfcfcf 100%);
+    color: #111;
+    border: 1px solid #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
+  .btn-solid:hover {
+    background: linear-gradient(180deg, #fff 0%, #f3f6ff 42%, #d5def2 100%);
+    border-color: #f2f6ff;
+    box-shadow: inset 0 1px 0 #fff, 0 0 22px rgba(186, 208, 255, 0.35), 0 8px 18px rgba(255, 255, 255, 0.12);
+  }
+
+  .btn-ghost {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.45) 50%, rgba(160, 175, 200, 0.08));
+    color: #fff;
+    border: 1px solid rgba(198, 198, 198, 0.45);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+  .btn-ghost:hover {
+    background: linear-gradient(135deg, rgba(210, 225, 255, 0.18), rgba(0, 0, 0, 0.35) 48%, rgba(180, 195, 220, 0.16));
+    border-color: rgba(220, 230, 255, 0.75);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 0 20px rgba(170, 200, 255, 0.22);
+  }
+
+  .hero-actions .btn { height: var(--hero-btn-h); padding: 0 18px; }
+  .hero-actions .btn-solid:hover {
+    box-shadow: inset 0 1px 0 #fff, 0 0 26px rgba(186, 208, 255, 0.4), 0 8px 18px rgba(255, 255, 255, 0.14);
+  }
+  .btn-frost {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.5) 46%, rgba(150, 170, 200, 0.1));
+    border: 1px solid rgba(198, 198, 198, 0.55);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .btn-frost:hover {
+    border-color: rgba(220, 230, 255, 0.8);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 0 24px rgba(170, 200, 255, 0.28);
+  }
+
+  /* ---------- Hero (centré en bas) ---------- */
+  .hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 8px 24px var(--hero-gap);
+    min-height: 0;
+  }
+  .hero-copy {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: var(--copy-max);
+    width: 100%;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    padding: 9px 15px;
+    border: 0;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #7d7d7d 0%, #2a2a2a 52%, #0a0a0a 100%);
+    color: #f2f2f2;
+    font-size: var(--badge);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .badge-star {
+    width: 18px; height: 20px;
+    color: #fff;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.45));
+  }
+
+  .hero h1,
+  .section-head h2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 1.12;
+    color: #fff;
+  }
+  .hero h1 { font-size: var(--h1); }
+  .headline-line {
+    display: block;
+    overflow: hidden;
+    padding: 0.06em 0.15em 0.14em;
+  }
+  .headline-line > .appear { display: inline-block; }
+  .hero h1 em,
+  .section-head h2 em {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.08em;
+    letter-spacing: -0.03em;
+    color: #9a9a9a;
+  }
+
+  .lede {
+    max-width: var(--lede-max);
+    margin-top: 18px;
+    color: #9a9a9a;
+    font-size: var(--lede);
+    font-weight: 400;
+    line-height: 1.55;
+    letter-spacing: -0.015em;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 26px;
+  }
+
+  /* ---------- Stats du premier écran ---------- */
+  .stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 0 var(--stats-x) var(--stats-y);
+    padding-bottom: max(var(--stats-y), env(safe-area-inset-bottom));
+    color: #d8d8d8;
+  }
+  .stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    font-size: var(--stat-size);
+    letter-spacing: -0.015em;
+    white-space: nowrap;
+  }
+  .stat-icon { width: 20px; height: 20px; color: #e8e8e8; }
+  .stat-icon-wide { width: 38px; height: 21px; }
+
+  /* ---------- Sections explicatives ---------- */
+  .section {
+    position: relative;
+    z-index: 1;
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: var(--section-y) var(--header-x) 0;
+  }
+  .section-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin: 0 auto;
+    max-width: 760px;
+  }
+  .section-head h2 { font-size: var(--h2); }
+  .section-head .lede { max-width: 540px; }
+
+  .glass {
+    position: relative;
+    border-radius: 12px;
+    border: 1px solid var(--border-soft);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.55) 50%, rgba(160, 175, 200, 0.05));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.5s var(--ease);
+  }
+  .glass-hover:hover {
+    border-color: rgba(220, 230, 255, 0.45);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 0 30px rgba(170, 200, 255, 0.12);
+    transform: translateY(-3px);
+  }
+
+  .step-num,
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(198, 198, 198, 0.4);
+    background: linear-gradient(105deg, #050505 0%, #2a2a2a 48%, #4a4a4a 100%);
+    font-size: 12px;
+    color: #e8e8e8;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* Pipeline « comment ça marche » */
+  .pipeline {
+    position: relative;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 64px;
+  }
+  .pipeline::before {
+    /* fil conducteur avec une lueur qui circule */
+    content: "";
+    position: absolute;
+    left: 6%; right: 6%;
+    top: 46px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22) 10%, rgba(255, 255, 255, 0.22) 90%, transparent);
+  }
+  .pipeline::after {
+    content: "";
+    position: absolute;
+    top: 45px;
+    left: 6%;
+    width: 120px;
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, transparent, #fff, transparent);
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.9));
+    animation: flow 4.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  @keyframes flow {
+    0% { transform: translateX(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateX(calc(min(var(--content-max), 100vw) * 0.78)); opacity: 0; }
+  }
+  .step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px 18px 22px;
+  }
+  .step-icon {
+    display: grid;
+    place-items: center;
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #3a3a3a, #0a0a0a 70%);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 0 6px #000;
+    color: #f2f2f2;
+  }
+  .step-icon svg { width: 22px; height: 22px; }
+  .step h3 { font-size: 17px; font-weight: 500; letter-spacing: -0.03em; }
+  .step p { font-size: 14px; line-height: 1.55; color: var(--muted); letter-spacing: -0.01em; }
+
+  /* Règles de détection */
+  .rules {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 64px;
+  }
+  .rule {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 26px 24px 24px;
+    overflow: hidden;
+  }
+  .rule-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .rule h3 { font-size: 22px; font-weight: 500; letter-spacing: -0.035em; }
+  .rule h3 em { font-family: var(--serif); font-style: italic; font-weight: 400; color: var(--muted); font-size: 1.1em; }
+  .rule p { font-size: 14.5px; line-height: 1.6; color: var(--muted); }
+  .rule .formula {
+    margin-top: auto;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: #e6e6e6;
+    line-height: 1.6;
+  }
+  .sev { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: #d8d8d8; }
+  .sev::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .sev-high { color: var(--high); }
+  .sev-crit { color: var(--crit); }
+  .sev-ai { color: #c9d6ff; }
+
+  /* ---------- Démo simulée ---------- */
+  .demo {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 14px;
+    margin-top: 64px;
+  }
+  .demo-graph {
+    display: flex;
+    flex-direction: column;
+    padding: 18px;
+  }
+  .demo-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .sim-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: #d8d8d8;
+  }
+  .sim-dot {
+    position: relative;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 10px var(--ok);
+  }
+  .sim-dot::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid var(--ok);
+    animation: ping 2.4s var(--ease) infinite;
+  }
+  @keyframes ping { from { transform: scale(0.6); opacity: 0.8; } to { transform: scale(2.2); opacity: 0; } }
+  .demo-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .net { flex: 1; width: 100%; min-height: 280px; margin-top: 8px; overflow: visible; }
+  .net .link { stroke: rgba(255, 255, 255, 0.16); stroke-width: 1; transition: stroke 0.4s ease; }
+  .net .link.is-hot { stroke: rgba(255, 255, 255, 0.7); }
+  .net .node-body { fill: #0b0b0b; stroke: rgba(255, 255, 255, 0.35); stroke-width: 1; transition: stroke 0.3s ease, fill 0.3s ease; }
+  .net .node.is-hit .node-body { stroke: #fff; fill: #1c1c1c; }
+  .net .node.is-high .node-body { stroke: var(--high); fill: rgba(242, 107, 29, 0.18); }
+  .net .node.is-crit .node-body { stroke: var(--crit); fill: rgba(255, 77, 94, 0.2); }
+  .net .node-label { fill: #9a9a9a; font: 10px var(--mono); }
+  .net .node-count { fill: #e8e8e8; font: 600 10px var(--font); }
+  .net .core-body { fill: url(#coreGrad); stroke: rgba(255, 255, 255, 0.55); stroke-width: 1; transition: stroke 0.3s ease; }
+  .net .core-halo { fill: url(#haloGrad); transform-box: fill-box; transform-origin: center; animation: breathe 4s ease-in-out infinite; }
+  .net .core.is-high .core-body { stroke: var(--high); stroke-width: 1.5; }
+  .net .core.is-crit .core-body { stroke: var(--crit); stroke-width: 1.5; }
+  .net .pulse { fill: #fff; filter: url(#glow); }
+  .net .wave { fill: none; stroke-width: 1.5; vector-effect: non-scaling-stroke; transform-box: fill-box; transform-origin: center; animation: wave 1.6s var(--ease) forwards; }
+  @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.12); opacity: 1; } }
+  @keyframes wave { from { transform: scale(1); opacity: 0.95; } to { transform: scale(5); opacity: 0; } }
+
+  .demo-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .metric {
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .metric b {
+    display: block;
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .metric span { font-size: 12px; color: var(--muted); }
+  .metric.is-crit b { color: var(--crit); }
+
+  .demo-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .terminal {
+    padding: 14px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #e6e6e6;
+    min-height: 104px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .terminal .dim { color: #8a8a8a; }
+  .terminal .warn { color: var(--crit); }
+  .terminal ul { list-style: none; color: #8a8a8a; }
+  .terminal li, .terminal-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .caret { animation: caret 1.05s steps(2, start) infinite; }
+  @keyframes caret { to { visibility: hidden; } }
+
+  .feed { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+  .feed-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 16px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .feed-head h3 { font-size: 14.5px; font-weight: 500; letter-spacing: -0.02em; }
+  .feed-count { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .feed-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    height: 200px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
+  .feed-empty { margin: auto; font-size: 13px; color: #8a8a8a; text-align: center; }
+
+  .row {
+    flex-shrink: 0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 13px;
+    animation: row-in 0.55s var(--ease);
+  }
+  @keyframes row-in { from { opacity: 0; transform: translateY(-8px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
+  .row-event { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .row-event .m { font-family: var(--mono); font-size: 12px; color: #fff; }
+  .row-event .t { font-family: var(--mono); font-size: 11.5px; color: #cfcfcf; }
+  .row-event .t.is-fail { color: var(--high); }
+  .row-event .u { color: #8a8a8a; font-size: 12px; }
+  .row-event time { font-family: var(--mono); font-size: 11px; color: #8a8a8a; white-space: nowrap; }
+  .row-alert { display: flex; flex-direction: column; gap: 4px; }
+  .row-alert.high { border-color: rgba(242, 107, 29, 0.4); background: rgba(242, 107, 29, 0.08); }
+  .row-alert.critical { border-color: rgba(255, 77, 94, 0.45); background: rgba(255, 77, 94, 0.09); }
+  .row-alert .top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .row-alert strong { font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em; }
+  .row-alert p { color: #bdbdbd; line-height: 1.45; }
+  .row-ai { margin-left: 14px; color: #c9c9c9; line-height: 1.5; border-color: rgba(201, 214, 255, 0.22); background: rgba(201, 214, 255, 0.05); }
+  .row-ai b { color: #dfe6ff; font-weight: 500; }
+
+  /* ---------- FAQ ---------- */
+  .faq { max-width: 760px; margin: 56px auto 0; display: flex; flex-direction: column; gap: 10px; }
+  .faq details { border-radius: 10px; }
+  .faq summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    font-size: 15.5px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary svg { width: 16px; height: 16px; color: #bdbdbd; transition: transform 0.35s var(--ease); }
+  .faq details[open] summary svg { transform: rotate(45deg); }
+  .faq details p { padding: 0 20px 20px; font-size: 14.5px; line-height: 1.65; color: var(--muted); max-width: 640px; }
+
+  /* ---------- Fin ---------- */
+  .site-footer {
+    position: relative;
+    z-index: 1;
+    max-width: var(--content-max);
+    margin: 120px auto 0;
+    padding: 28px var(--header-x) max(32px, env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: #8a8a8a;
+  }
+
+  /* ---------- Apparitions ---------- */
+  .appear {
+    opacity: 1;
+    animation-duration: 1.05s;
+    animation-fill-mode: both;
+    animation-timing-function: var(--ease);
+    animation-delay: var(--d, 0.08s);
+  }
+  .appear--scale { animation-name: in-scale; }
+  .appear--soft  { animation-name: in-soft; }
+  .appear--mask  { animation-name: in-mask; }
+  .appear--pop   { animation-name: in-pop; }
+  .appear--btn   { animation-name: in-btn; }
+  .appear--side  { animation-name: in-side; }
+  .appear--stat  { animation-name: in-stat; }
+  .lede.appear { animation-duration: 1.25s; }
+
+  /* Sous le premier écran : l'animation attend que l'élément soit visible */
+  .appear--later:not(.in-view) { animation-play-state: paused; }
+
+  .appear.is-in,
+  .hero-photo.is-in {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    filter: none;
+  }
+
+  .hero .badge-star { animation: in-star 0.9s var(--ease) 0.28s both; }
+  .hero h1 em { animation: in-em 1.2s var(--ease) 0.72s both; }
+
+  @keyframes in-scale { from { opacity: 0; transform: scale(0.84); } to { opacity: 1; transform: scale(1); } }
+  @keyframes in-soft  { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes in-mask  { from { opacity: 0; transform: translateY(40%); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes in-pop   { 0% { opacity: 0; transform: scale(0.9); } 70% { opacity: 1; transform: scale(1.03); } 100% { opacity: 1; transform: scale(1); } }
+  @keyframes in-btn   { from { opacity: 0; transform: translateY(18px) scale(0.94); } to { opacity: 1; transform: none; } }
+  @keyframes in-side  { from { opacity: 0; transform: translateX(22px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes in-stat  { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes in-star  { 0% { opacity: 0; transform: scale(0.2) rotate(-50deg); } 65% { opacity: 1; transform: scale(1.2) rotate(8deg); } 100% { opacity: 1; transform: none; } }
+  @keyframes in-em    { from { opacity: 0.35; filter: blur(4px); } to { opacity: 1; filter: blur(0); } }
+
+  /* ---------- Responsive ---------- */
+  @media (min-width: 1600px) {
+    :root {
+      --logo: 17px; --logo-mark: 24px; --nav: 15px; --nav-h: 44px;
+      --btn: 15px; --btn-h: 44px; --hero-btn-h: 48px;
+      --h1: 64px; --h2: 56px; --lede: 18px; --badge: 13.5px; --stat-size: 15px;
+      --header-y: 28px; --header-x: 64px; --stats-x: 96px; --stats-y: 44px;
+      --copy-max: 980px; --lede-max: 540px; --content-max: 1320px;
+    }
+    #site-nav a { padding: 0 20px; }
+    .badge { margin-bottom: 26px; }
+    .lede { margin-top: 22px; }
+    .hero-actions { margin-top: 30px; gap: 12px; }
+    .stat-icon { width: 22px; height: 22px; }
+    .stat-icon-wide { width: 45px; height: 24px; }
+  }
+  @media (min-width: 1920px) {
+    :root {
+      --logo: 18px; --logo-mark: 26px; --nav: 16px; --nav-h: 48px;
+      --btn: 16px; --btn-h: 48px; --hero-btn-h: 52px;
+      --h1: 76px; --h2: 64px; --lede: 20px; --badge: 14.5px; --stat-size: 16px;
+      --header-y: 32px; --header-x: 80px; --stats-x: 120px; --stats-y: 52px;
+      --copy-max: 1120px; --lede-max: 620px; --content-max: 1440px;
+    }
+    #site-nav { gap: 10px; }
+    #site-nav a { padding: 0 22px; }
+    .btn { padding: 0 22px; }
+    .badge { padding: 10px 15px; }
+    .stat-icon-wide { width: 48px; height: 26px; }
+  }
+  @media (min-width: 2560px) {
+    :root { --h1: 88px; --h2: 72px; --lede: 22px; --header-x: 120px; --stats-x: 160px; --copy-max: 1280px; --lede-max: 680px; }
+  }
+  @media (min-width: 1280px) and (max-width: 1599px) {
+    :root { --h1: 54px; --h2: 48px; --lede: 16px; --header-x: 48px; --stats-x: 80px; --copy-max: 900px; }
+  }
+  @media (min-width: 901px) and (max-width: 1279px) {
+    :root {
+      --logo: 15px; --nav: 13px; --nav-h: 36px; --btn: 13px; --btn-h: 38px; --hero-btn-h: 40px;
+      --h1: 42px; --h2: 38px; --lede: 15px; --badge: 12px; --stat-size: 12.5px;
+      --header-y: 16px; --header-x: 28px; --stats-x: 36px; --stats-y: 28px;
+      --hero-gap: 64px; --copy-max: 760px; --lede-max: 440px;
+    }
+    #site-nav a { padding: 0 14px; }
+    .badge { margin-bottom: 16px; }
+    .lede { margin-top: 14px; }
+    .hero-actions { margin-top: 20px; }
+    .pipeline { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline::before, .pipeline::after { display: none; }
+  }
+  @media (min-width: 901px) and (max-height: 850px) {
+    :root { --header-y: 14px; --stats-y: 24px; --hero-gap: 48px; --h1: 40px; }
+    .hero .badge { margin-bottom: 12px; }
+    .hero .lede { margin-top: 12px; }
+    .hero-actions { margin-top: 16px; }
+  }
+  @media (min-width: 901px) and (max-height: 720px) {
+    :root { --h1: 34px; --lede: 14px; --hero-gap: 32px; --stats-y: 18px; --nav-h: 30px; --btn-h: 34px; --hero-btn-h: 36px; }
+    .hero .badge { margin-bottom: 8px; }
+  }
+
+  @media (max-width: 900px) {
+    :root {
+      --logo: 16px; --btn: 15px; --btn-h: 46px; --hero-btn-h: 48px;
+      --h1: 36px; --h2: 32px; --lede: 16.5px; --badge: 13.5px; --stat-size: 15px;
+      --header-y: 16px; --header-x: 18px; --stats-x: 20px; --stats-y: 28px; --hero-gap: 36px;
+      --section-y: 110px;
+    }
+    html, body { height: auto; overflow-y: auto; }
+
+    .header {
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      padding-top: max(var(--header-y), env(safe-area-inset-top));
+      padding-left: max(var(--header-x), env(safe-area-inset-left));
+      padding-right: max(var(--header-x), env(safe-area-inset-right));
+    }
+    .logo, .header-end, .burger { position: relative; z-index: 80; }
+    .burger { display: grid; }
+    .header-end { grid-column: 2 / 4; }
+
+    .menu-backdrop {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: rgba(8, 8, 8, 0.42);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.28s ease, visibility 0.28s ease;
+    }
+    body.menu-open .menu-backdrop {
+      opacity: 1;
+      visibility: visible;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+    #site-nav {
+      position: fixed;
+      inset: 0;
+      z-index: 45;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      padding: 96px 22px 32px;
+      padding-top: max(96px, calc(env(safe-area-inset-top) + 88px));
+      background: transparent;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.28s ease, visibility 0.28s ease;
+    }
+    body.menu-open #site-nav { opacity: 1; visibility: visible; }
+    #site-nav a { width: 100%; height: 56px; font-size: 19px; border-radius: 10px; }
+    body.menu-open { overflow: hidden; }
+
+    .hero { padding: 20px 20px 64px; align-items: flex-end; }
+    .hero-copy, .hero .lede { max-width: 100%; }
+    .stats { flex-direction: column; justify-content: center; gap: 16px; }
+    .stat { white-space: normal; }
+
+    .pipeline, .rules, .demo { grid-template-columns: 1fr; }
+    .pipeline::before, .pipeline::after { display: none; }
+    .feed-body { height: 240px; }
+  }
+  @media (max-width: 560px) {
+    :root { --h1: 34px; --lede: 16px; --header-x: 16px; }
+    .hero-actions { flex-direction: column; width: 100%; }
+    .hero-actions .btn { width: 100%; }
+    .header-cta { padding: 0 12px; }
+    .demo-actions, .demo-actions .btn { width: 100%; }
+  }
+
+  /* ---------- Mouvement réduit ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      transition: none !important;
+      animation: none !important;
+    }
+    .appear, .hero-photo, .hero h1 em, .badge-star {
+      opacity: 1;
+      transform: none;
+      clip-path: none;
+      filter: none;
+    }
+  }
+</style>
+</head>
+<body style="background:#000;color:#fff">
+
+<div class="grain" aria-hidden="true"></div>
+
+<div class="hero-photo" aria-hidden="true">
+  <video id="heroVideo" autoplay muted loop playsinline preload="auto">
+    <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260818_072341_50851634-bbc3-4c33-9acc-7647d4db44aa.mp4" type="video/mp4">
+  </video>
+</div>
+
+<div class="page">
+  <div class="menu-backdrop" aria-hidden="true"></div>
+
+  <header class="header">
+    <a class="logo appear appear--scale" href="#top" aria-label="MiniSOC" style="--d:0.08s">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 19.5 5.5v6c0 4.7-3.2 8.5-7.5 10-4.3-1.5-7.5-5.3-7.5-10v-6z"/><circle cx="12" cy="11.5" r="2.4" fill="currentColor"/></svg>
+      <span>Mini<span class="logo-suffix">SOC</span></span>
+    </a>
+
+    <nav id="site-nav" aria-label="Principal">
+      <a class="appear appear--scale" href="#fonctionnement" style="--d:0.16s">Fonctionnement</a>
+      <a class="appear appear--soft" href="#detection" style="--d:0.28s">Détection</a>
+      <a class="appear appear--scale" href="#demo" style="--d:0.40s">Démo</a>
+      <a class="appear appear--soft" href="#faq" style="--d:0.52s">FAQ</a>
+    </nav>
+
+    <div class="header-end">
+      <a class="btn btn-solid header-cta appear appear--scale" href="#demo" style="--d:0.34s">Voir la démo</a>
+      <button class="burger appear appear--scale" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Ouvrir le menu" style="--d:0.34s">
+        <span class="burger-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="hero" id="top">
+    <div class="hero-copy">
+      <span class="badge appear appear--pop" style="--d:0.22s">
+        <svg class="badge-star" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.6C12.55 2.6 12.88 3.15 13.08 4.7c.62 4.7 1.52 5.6 6.22 6.22 1.55.2 2.1.53 2.1 1.08s-.55.88-2.1 1.08c-4.7.62-5.6 1.52-6.22 6.22-.2 1.55-.53 2.1-1.08 2.1s-.88-.55-1.08-2.1c-.62-4.7-1.52-5.6-6.22-6.22C3.15 12.88 2.6 12.55 2.6 12s.55-.88 2.1-1.08c4.7-.62 5.6-1.52 6.22-6.22C11.12 3.15 11.45 2.6 12 2.6Z"/></svg>
+        Mini Security Operations Center
+      </span>
+
+      <h1>
+        <span class="headline-line"><span class="appear appear--mask" style="--d:0.42s">Un <em>centre de sécurité</em></span></span>
+        <span class="headline-line"><span class="appear appear--mask" style="--d:0.62s">pour votre infrastructure.</span></span>
+      </h1>
+
+      <p class="lede appear appear--soft" style="--d:0.82s">
+        MiniSOC collecte les événements de vos machines, détecte les comportements suspects
+        et fait analyser chaque alerte par une IA locale, en temps réel.
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn btn-solid appear appear--btn" href="#demo" style="--d:0.96s">Lancer la démo</a>
+        <a class="btn btn-ghost btn-frost appear appear--side" href="#fonctionnement" style="--d:1.10s">Comment ça marche</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="stats" aria-label="MiniSOC en bref">
+    <div class="stat appear appear--stat" style="--d:1.12s">
+      <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <defs>
+          <linearGradient id="pillL" x1="3" y1="2" x2="14" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset="1" stop-color="#3a3a3a" stop-opacity=".62"/></linearGradient>
+          <linearGradient id="pillR" x1="13" y1="2" x2="24" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#3a3a3a" stop-opacity=".38"/><stop offset="1" stop-color="#fff" stop-opacity=".62"/></linearGradient>
+        </defs>
+        <rect x="3.4" y="2.6" width="7.2" height="18.8" rx="3.6" fill="url(#pillL)"/>
+        <rect x="13.4" y="2.6" width="7.2" height="18.8" rx="3.6" fill="url(#pillR)"/>
+        <rect x="9.2" y="10.9" width="5.6" height="2.2" rx="1.1" fill="#4a4a4a"/>
+      </svg>
+      Détection à seuil + analyse IA locale
+    </div>
+    <div class="stat appear appear--stat" style="--d:1.28s">
+      <svg class="stat-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="2.4" y="2.4" width="19.2" height="19.2" rx="6.2" fill="#fff"/>
+        <path d="M12 7.1v7.4M8.15 12.35L12 16.2l3.85-3.85" fill="none" stroke="#111" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Rapport d'incident exporté en un clic
+    </div>
+    <div class="stat appear appear--stat" style="--d:1.44s">
+      <svg class="stat-icon stat-icon-wide" viewBox="0 0 40 22" aria-hidden="true">
+        <circle cx="10.2" cy="11" r="9.2" fill="#2b2b2b"/>
+        <rect x="6.4" y="7.2" width="7.6" height="5.4" rx="1" fill="none" stroke="#f4f4f4" stroke-width="1.3"/>
+        <path d="M8.2 15h4" stroke="#f4f4f4" stroke-width="1.3" stroke-linecap="round"/>
+        <circle cx="20.2" cy="11" r="9.2" fill="#ffffff"/>
+        <rect x="16.4" y="7.2" width="7.6" height="5.4" rx="1" fill="none" stroke="#111" stroke-width="1.3"/>
+        <path d="M18.2 15h4" stroke="#111" stroke-width="1.3" stroke-linecap="round"/>
+        <circle cx="30.2" cy="11" r="9.2" fill="#f26b1d"/>
+        <text x="30.2" y="15.1" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="12.5" text-anchor="middle" fill="#fff">5</text>
+      </svg>
+      5 machines surveillées en continu
+    </div>
+  </footer>
+</div>
+
+<!-- ===================== Comment ça marche ===================== -->
+<section class="section" id="fonctionnement" aria-labelledby="fTitle">
+  <div class="section-head">
+    <span class="badge appear appear--pop appear--later">Fonctionnement</span>
+    <h2 id="fTitle">
+      <span class="headline-line"><span class="appear appear--mask appear--later" style="--d:0.1s">De l'<em>événement</em></span></span>
+      <span class="headline-line"><span class="appear appear--mask appear--later" style="--d:0.25s">à l'alerte expliquée.</span></span>
+    </h2>
+    <p class="lede appear appear--soft appear--later" style="--d:0.35s">
+      Cinq étapes, du journal brut à la recommandation. Tout passe par un serveur central
+      qui diffuse chaque information en direct au tableau de bord.
+    </p>
+  </div>
+
+  <ol class="pipeline">
+    <li class="step glass glass-hover appear appear--stat appear--later" style="--d:0.1s">
+      <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span>
+      <span class="step-num">01</span>
+      <h3>Collecte</h3>
+      <p>Chaque machine surveillée remonte ses événements : connexions, authentifications, accès aux fichiers, activité réseau.</p>
+    </li>
+    <li class="step glass glass-hover appear appear--stat appear--later" style="--d:0.2s">
+      <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="6" r="1.6"/><circle cx="20" cy="6" r="1.6"/><circle cx="4" cy="18" r="1.6"/><circle cx="20" cy="18" r="1.6"/><path d="M5.4 6.9 9.5 10.4M18.6 6.9l-4.1 3.5M5.4 17.1l4.1-3.5M18.6 17.1l-4.1-3.5"/></svg></span>
+      <span class="step-num">02</span>
+      <h3>Centralisation</h3>
+      <p>Le serveur central agrège le flux et le pousse en temps réel au tableau de bord via WebSocket.</p>
+    </li>
+    <li class="step glass glass-hover appear appear--stat appear--later" style="--d:0.3s">
+      <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></svg></span>
+      <span class="step-num">03</span>
+      <h3>Détection</h3>
+      <p>Des règles à seuil fixe repèrent les schémas suspects et lèvent une alerte classée par gravité.</p>
+    </li>
+    <li class="step glass glass-hover appear appear--stat appear--later" style="--d:0.4s">
+      <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.6C12.55 2.6 12.88 3.15 13.08 4.7c.62 4.7 1.52 5.6 6.22 6.22 1.55.2 2.1.53 2.1 1.08s-.55.88-2.1 1.08c-4.7.62-5.6 1.52-6.22 6.22-.2 1.55-.53 2.1-1.08 2.1s-.88-.55-1.08-2.1c-.62-4.7-1.52-5.6-6.22-6.22C3.15 12.88 2.6 12.55 2.6 12s.55-.88 2.1-1.08c4.7-.62 5.6-1.52 6.22-6.22C11.12 3.15 11.45 2.6 12 2.6Z"/></svg></span>
+      <span class="step-num">04</span>
+      <h3>Analyse IA</h3>
+      <p>Un modèle d'IA exécuté en local explique chaque alerte et propose des actions concrètes.</p>
+    </li>
+    <li class="step glass glass-hover appear appear--stat appear--later" style="--d:0.5s">
+      <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9.5 14.5 12 17l2.5-2.5"/></svg></span>
+      <span class="step-num">05</span>
+      <h3>Rapport</h3>
+      <p>Toutes les alertes de la session s'exportent en un rapport d'incident Markdown, prêt à partager.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ===================== Détection ===================== -->
+<section class="section" id="detection" aria-labelledby="dTitle">
+  <div class="section-head">
+    <span class="badge appear appear--pop appear--later">Détection</span>
+    <h2 id="dTitle">
+      <span class="headline-line"><span class="appear appear--mask appear--later" style="--d:0.1s">Des règles <em>simples</em>,</span></span>
+      <span class="headline-line"><span class="appear appear--mask appear--later" style="--d:0.25s">des alertes claires.</span></span>
+    </h2>
+    <p class="lede appear appear--soft appear--later" style="--d:0.35s">
+      Pas de boîte noire : chaque alerte vient d'une règle lisible, puis l'IA ajoute le contexte
+      qu'un analyste écrirait.
+    </p>
+  </div>
+
+  <div class="rules">
+    <article class="rule glass glass-hover appear appear--stat appear--later" style="--d:0.1s">
+      <div class="rule-top"><span class="tag">brute_force</span><span class="sev sev-high">Gravité haute</span></div>
+      <h3>Force <em>brute</em></h3>
+      <p>Une rafale d'échecs d'authentification sur un même compte ou une même machine, en peu de temps.</p>
+      <div class="formula">échecs de connexion ≥ seuil<br>sur une fenêtre de temps courte</div>
+    </article>
+    <article class="rule glass glass-hover appear appear--stat appear--later" style="--d:0.2s">
+      <div class="rule-top"><span class="tag">lateral_movement</span><span class="sev sev-crit">Critique</span></div>
+      <h3>Mouvement <em>latéral</em></h3>
+      <p>Un même compte qui rebondit d'une machine à l'autre : signe classique d'un attaquant qui progresse dans le réseau.</p>
+      <div class="formula">même compte, plusieurs machines<br>en rafale → alerte critique</div>
+    </article>
+    <article class="rule glass glass-hover appear appear--stat appear--later" style="--d:0.3s">
+      <div class="rule-top"><span class="tag">alert_analysis</span><span class="sev sev-ai">IA locale</span></div>
+      <h3>Analyse <em>expliquée</em></h3>
+      <p>Chaque alerte est confiée au modèle local, qui décrit ce qui se passe et recommande quoi faire.</p>
+      <div class="formula">alerte → modèle local<br>→ explication + actions</div>
+    </article>
+  </div>
+</section>
+
+<!-- ===================== Démo ===================== -->
+<section class="section" id="demo" aria-labelledby="demoTitle">
+  <div class="section-head">
+    <span class="badge appear appear--pop appear--later">Démo</span>
+    <h2 id="demoTitle">
+      <span class="headline-line"><span class="appear appear--mask appear--later" style="--d:0.1s">Une attaque,</span></span>
+      <span class="headline-line"><span class="appear appear--mask appear--later" style="--d:0.25s"><em>en direct.</em></span></span>
+    </h2>
+    <p class="lede appear appear--soft appear--later" style="--d:0.35s">
+      Cette démo simule un réseau de cinq machines dans votre navigateur. Lancez le scénario :
+      une force brute, puis un mouvement latéral, détectés et analysés sous vos yeux.
+    </p>
+  </div>
+
+  <div class="demo">
+    <div class="demo-graph glass appear appear--stat appear--later" style="--d:0.1s">
+      <div class="demo-bar">
+        <span class="sim-pill"><span class="sim-dot" aria-hidden="true"></span>Simulation locale · aucune donnée réelle</span>
+        <div class="demo-actions">
+          <button class="btn btn-solid" type="button" id="runScenario">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+            Lancer un scénario d'attaque
+          </button>
+          <button class="btn btn-ghost" type="button" id="exportReport">Exporter le rapport</button>
+        </div>
+      </div>
+
+      <svg class="net" id="net" viewBox="0 0 400 300" role="img" aria-label="Réseau simulé : un serveur central relié à cinq machines">
+        <defs>
+          <radialGradient id="coreGrad" cx="35%" cy="30%"><stop offset="0" stop-color="#5a5a5a"/><stop offset="1" stop-color="#0a0a0a"/></radialGradient>
+          <radialGradient id="haloGrad"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          <filter id="glow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <g id="netLinks"></g>
+        <g id="netNodes"></g>
+        <g class="core" id="netCore">
+          <circle class="core-halo" cx="200" cy="150" r="58"/>
+          <circle class="core-body" cx="200" cy="150" r="27"/>
+          <path d="M200 136.5l10 3.8v7.4c0 6-4.1 10.8-10 12.8-5.9-2-10-6.8-10-12.8v-7.4z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>
+        </g>
+        <g id="netFx"></g>
+      </svg>
+
+      <div class="demo-metrics" aria-live="polite">
+        <div class="metric"><b id="mEvents">0</b><span>événements</span></div>
+        <div class="metric"><b id="mAlerts">0</b><span>alertes</span></div>
+        <div class="metric" id="mCritBox"><b id="mCritical">0</b><span>critiques</span></div>
+      </div>
+    </div>
+
+    <div class="demo-side">
+      <div class="terminal glass appear appear--stat appear--later" style="--d:0.2s" aria-hidden="true">
+        <ul id="termHistory"></ul>
+        <div class="terminal-line" id="termLine"><span class="dim">en attente d'événements</span> <span class="caret">▍</span></div>
+      </div>
+
+      <div class="feed glass appear appear--stat appear--later" style="--d:0.3s">
+        <div class="feed-head"><h3>Alertes</h3><span class="feed-count" id="alertsCount">0 active(s)</span></div>
+        <div class="feed-body" id="alerts" aria-live="polite">
+          <p class="feed-empty" id="alertsEmpty">Aucune alerte. Le signal est stable.</p>
+        </div>
+      </div>
+
+      <div class="feed glass appear appear--stat appear--later" style="--d:0.4s">
+        <div class="feed-head"><h3>Flux d'événements</h3><span class="feed-count" id="eventsCount">0 reçu(s)</span></div>
+        <div class="feed-body" id="events">
+          <p class="feed-empty" id="eventsEmpty">Le flux démarre dès que la démo est visible.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section class="section" id="faq" aria-labelledby="faqTitle">
+  <div class="section-head">
+    <span class="badge appear appear--pop appear--later">FAQ</span>
+    <h2 id="faqTitle">
+      <span class="headline-line"><span class="appear appear--mask appear--later" style="--d:0.1s">Les <em>questions</em></span></span>
+      <span class="headline-line"><span class="appear appear--mask appear--later" style="--d:0.25s">qu'on se pose.</span></span>
+    </h2>
+  </div>
+
+  <div class="faq">
+    <details class="glass appear appear--soft appear--later" style="--d:0.1s">
+      <summary>Qu'est-ce qu'un SOC ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+      <p>Un Security Operations Center est l'équipe et l'outillage qui surveillent un système d'information en continu pour détecter et traiter les incidents de sécurité. MiniSOC en reproduit les briques essentielles à petite échelle : collecte, détection, alerte, analyse et rapport.</p>
+    </details>
+    <details class="glass appear appear--soft appear--later" style="--d:0.16s">
+      <summary>Pourquoi une IA locale ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+      <p>Les journaux de sécurité sont sensibles. L'analyse des alertes est confiée à un modèle qui tourne en local plutôt qu'à un service en ligne : les détails de l'incident restent chez vous.</p>
+    </details>
+    <details class="glass appear appear--soft appear--later" style="--d:0.22s">
+      <summary>Pourquoi des règles à seuil ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+      <p>Une règle à seuil est transparente : on sait exactement pourquoi une alerte est levée. L'IA intervient ensuite, pour expliquer et aider à prioriser, pas pour décider seule.</p>
+    </details>
+    <details class="glass appear appear--soft appear--later" style="--d:0.28s">
+      <summary>La démo utilise-t-elle de vraies données ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+      <p>Non. Elle simule cinq machines directement dans votre navigateur, avec les mêmes types de messages que le vrai MiniSOC : événements, alertes et analyses. Rien n'est envoyé nulle part.</p>
+    </details>
+    <details class="glass appear appear--soft appear--later" style="--d:0.34s">
+      <summary>Est-ce un produit commercial ?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></summary>
+      <p>Non, c'est un projet de recherche personnel, pensé pour comprendre et montrer comment fonctionne une chaîne de détection, de bout en bout.</p>
+    </details>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <span>MiniSOC — projet de recherche personnel</span>
+  <span>Détection à seuil fixe + analyse IA locale</span>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var body = document.body;
+
+  /* ---------- 1. Apparitions : .is-in à la fin de chaque animation ---------- */
+  var appears = Array.prototype.slice.call(document.querySelectorAll('.appear'));
+  var photo = document.querySelector('.hero-photo');
+  appears.concat(photo ? [photo] : []).forEach(function (el) {
+    el.addEventListener('animationend', function (e) {
+      if (e.target === el) el.classList.add('is-in');
+    }, { once: true });
+  });
+
+  // Sous le premier écran : l'animation se joue à l'arrivée dans la vue
+  var later = document.querySelectorAll('.appear--later');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) { entry.target.classList.add('in-view'); io.unobserve(entry.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    later.forEach(function (el) { io.observe(el); });
+  } else {
+    later.forEach(function (el) { el.classList.add('in-view'); });
+  }
+
+  /* ---------- 2. Repli : si les animations ne tournent pas, tout s'affiche ---------- */
+  function forceIn() {
+    appears.forEach(function (el) { el.classList.add('is-in'); });
+    if (photo) photo.classList.add('is-in');
+  }
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      var probe = document.querySelector('.hero .appear');
+      if (!probe || typeof probe.getAnimations !== 'function') { forceIn(); return; }
+      var ok = probe.getAnimations().some(function (a) { return a.playState === 'running' || a.playState === 'finished'; });
+      if (!ok) forceIn();
+    });
+  });
+
+  // Mouvement réduit : la vidéo reste sur sa première image
+  var video = document.getElementById('heroVideo');
+  if (video && reduce) { video.removeAttribute('autoplay'); video.pause(); }
+
+  /* ---------- 3–5. Menu mobile ---------- */
+  var burger = document.querySelector('.burger');
+  var nav = document.getElementById('site-nav');
+  function setMenu(open) {
+    body.classList.toggle('menu-open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+  }
+  burger.addEventListener('click', function () { setMenu(!body.classList.contains('menu-open')); });
+  nav.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+  document.querySelector('.menu-backdrop').addEventListener('click', function () { setMenu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+  var desktop = window.matchMedia('(min-width: 901px)');
+  var onDesktop = function (e) { if (e.matches) setMenu(false); };
+  if (desktop.addEventListener) desktop.addEventListener('change', onDesktop); else desktop.addListener(onDesktop);
+
+  /* ======================================================================
+     Démo : simulation locale d'un MiniSOC (5 machines + serveur central).
+     Mêmes messages que le vrai système : new_event, new_alert, alert_analysis.
+     Les textes sont insérés avec textContent, jamais innerHTML.
+     ====================================================================== */
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var MACHINES = ['machine-01', 'machine-02', 'machine-03', 'machine-04', 'machine-05'];
+  var USERS = ['alice', 'bob', 'svc-backup', 'admin', null];
+  var TYPES = ['login_success', 'login_failed', 'file_access', 'network_connection', 'process_start'];
+  var CORE = { x: 200, y: 150 };
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = String(text);
+    return n;
+  }
+  function svgEl(tag, attrs) {
+    var n = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+
+  /* Graphe réseau */
+  var linksG = document.getElementById('netLinks');
+  var nodesG = document.getElementById('netNodes');
+  var fxG = document.getElementById('netFx');
+  var coreG = document.getElementById('netCore');
+  var nodes = MACHINES.map(function (name, i) {
+    var a = -Math.PI / 2 + (i / MACHINES.length) * Math.PI * 2;
+    var x = CORE.x + Math.cos(a) * 150;
+    var y = CORE.y + Math.sin(a) * 108;
+    var line = svgEl('line', { 'class': 'link', x1: CORE.x, y1: CORE.y, x2: x, y2: y });
+    linksG.appendChild(line);
+    var g = svgEl('g', { 'class': 'node' });
+    g.appendChild(svgEl('circle', { 'class': 'node-body', cx: x, cy: y, r: 14 }));
+    var count = svgEl('text', { 'class': 'node-count', x: x, y: y + 3.5, 'text-anchor': 'middle' });
+    count.textContent = '0';
+    g.appendChild(count);
+    var label = svgEl('text', { 'class': 'node-label', x: x, y: y + (y > CORE.y ? 30 : -22), 'text-anchor': 'middle' });
+    label.textContent = name;
+    g.appendChild(label);
+    nodesG.appendChild(g);
+    return { x: x, y: y, line: line, g: g, count: count, hits: 0 };
+  });
+  function nodeFor(machine) {
+    var i = MACHINES.indexOf(machine);
+    if (i < 0) {
+      var h = 0;
+      for (var c = 0; c < machine.length; c++) h = (h * 31 + machine.charCodeAt(c)) >>> 0;
+      i = h % nodes.length;
+    }
+    return nodes[i];
+  }
+  var timers = new WeakMap();
+  function flash(target, cls, ms) {
+    target.classList.add(cls);
+    var key = timers.get(target) || {};
+    clearTimeout(key[cls]);
+    key[cls] = setTimeout(function () { target.classList.remove(cls); }, ms);
+    timers.set(target, key);
+  }
+  function pulse(n) {
+    flash(n.g, 'is-hit', 500);
+    flash(n.line, 'is-hot', 700);
+    if (reduce) return;
+    var dot = svgEl('circle', { 'class': 'pulse', r: 3.2, cx: n.x, cy: n.y });
+    fxG.appendChild(dot);
+    var start = performance.now();
+    (function step(now) {
+      var t = Math.min(1, (now - start) / 850);
+      var e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      dot.setAttribute('cx', (n.x + (CORE.x - n.x) * e).toFixed(1));
+      dot.setAttribute('cy', (n.y + (CORE.y - n.y) * e).toFixed(1));
+      if (t < 1) requestAnimationFrame(step); else dot.remove();
+    })(start);
+  }
+  function shock(color) {
+    if (reduce) return;
+    [0, 260].forEach(function (delay) {
+      setTimeout(function () {
+        var ring = svgEl('circle', { 'class': 'wave', cx: CORE.x, cy: CORE.y, r: 27, stroke: color });
+        fxG.appendChild(ring);
+        setTimeout(function () { ring.remove(); }, 1700);
+      }, delay);
+    });
+  }
+
+  /* Tableau de bord simulé */
+  var alertsBox = document.getElementById('alerts');
+  var eventsBox = document.getElementById('events');
+  var termLine = document.getElementById('termLine');
+  var termHistory = document.getElementById('termHistory');
+  var counts = { events: 0, alerts: 0, critical: 0 };
+  var incidentLog = [];
+  var lastTerm = null;
+
+  function clock(ts) { return new Date(ts).toLocaleTimeString('fr-FR'); }
+  function updateMetrics() {
+    document.getElementById('mEvents').textContent = counts.events;
+    document.getElementById('mAlerts').textContent = counts.alerts;
+    document.getElementById('mCritical').textContent = counts.critical;
+    document.getElementById('mCritBox').classList.toggle('is-crit', counts.critical > 0);
+    document.getElementById('alertsCount').textContent = alertsBox.querySelectorAll('.row-alert').length + ' active(s)';
+    document.getElementById('eventsCount').textContent = counts.events + ' reçu(s)';
+  }
+  function term(text, warn) {
+    if (lastTerm) {
+      termHistory.appendChild(el('li', null, lastTerm));
+      while (termHistory.children.length > 3) termHistory.firstElementChild.remove();
+    }
+    var stamp = '[' + new Date().toLocaleTimeString('fr-FR') + ']';
+    lastTerm = stamp + ' ' + (warn ? '⚠ ' : '') + text;
+    termLine.replaceChildren(el('span', 'dim', stamp), document.createTextNode(' '));
+    if (warn) termLine.appendChild(el('span', 'warn', '⚠ '));
+    termLine.appendChild(document.createTextNode(text + ' '));
+    termLine.appendChild(el('span', 'caret', '▍'));
+  }
+
+  function onEvent(ev) {
+    var empty = document.getElementById('eventsEmpty');
+    if (empty) empty.remove();
+    var row = el('div', 'row row-event');
+    var left = el('span');
+    left.appendChild(el('span', 'm', ev.machine));
+    left.appendChild(document.createTextNode(' → '));
+    left.appendChild(el('span', 't' + (ev.type === 'login_failed' ? ' is-fail' : ''), ev.type));
+    if (ev.user) {
+      left.appendChild(document.createTextNode(' '));
+      left.appendChild(el('span', 'u', '[' + ev.user + ']'));
+    }
+    row.appendChild(left);
+    row.appendChild(el('time', null, clock(ev.timestamp)));
+    eventsBox.prepend(row);
+    while (eventsBox.children.length > 40) eventsBox.lastChild.remove();
+
+    counts.events++;
+    var n = nodeFor(ev.machine);
+    n.hits++;
+    n.count.textContent = String(n.hits);
+    pulse(n);
+    updateMetrics();
+    term(ev.machine + ' → ' + ev.type + (ev.user ? ' [' + ev.user + ']' : ''), false);
+  }
+
+  function onAlert(al) {
+    var empty = document.getElementById('alertsEmpty');
+    if (empty) empty.remove();
+    var sev = al.severity === 'critical' ? 'critical' : 'high';
+    var row = el('div', 'row row-alert ' + sev);
+    row.id = 'alert-' + al.pattern + '-' + al.machine;
+    var top = el('div', 'top');
+    top.appendChild(el('span', 'sev ' + (sev === 'critical' ? 'sev-crit' : 'sev-high'), sev === 'critical' ? 'Critique' : 'Haute'));
+    top.appendChild(el('strong', null, String(al.pattern).toUpperCase()));
+    row.appendChild(top);
+    row.appendChild(el('p', null, al.message));
+    alertsBox.prepend(row);
+    incidentLog.push({ pattern: al.pattern, severity: al.severity, machine: al.machine, message: al.message, timestamp: al.timestamp, analysis: null });
+
+    counts.alerts++;
+    if (sev === 'critical') counts.critical++;
+    updateMetrics();
+    term('ALERTE ' + al.pattern + ' sur ' + al.machine + ' — ' + al.message, true);
+
+    var cls = sev === 'critical' ? 'is-crit' : 'is-high';
+    flash(nodeFor(al.machine).g, cls, sev === 'critical' ? 4000 : 2500);
+    flash(coreG, cls, sev === 'critical' ? 3000 : 1800);
+    shock(sev === 'critical' ? '#ff4d5e' : '#f26b1d');
+  }
+
+  function onAnalysis(data) {
+    var row = el('div', 'row row-ai');
+    row.appendChild(el('b', null, 'Analyse IA : '));
+    row.appendChild(document.createTextNode(data.analysis));
+    var target = document.getElementById('alert-' + data.alertPattern + '-' + data.machine);
+    if (target) target.insertAdjacentElement('afterend', row); else alertsBox.prepend(row);
+    for (var i = incidentLog.length - 1; i >= 0; i--) {
+      var e = incidentLog[i];
+      if (e.pattern === data.alertPattern && e.machine === data.machine && !e.analysis) { e.analysis = data.analysis; break; }
+    }
+  }
+
+  // Même aiguillage que le vrai tableau de bord
+  function dispatch(data) {
+    if (data.type === 'new_event') onEvent(data.event);
+    else if (data.type === 'new_alert') onAlert(data.alert);
+    else if (data.type === 'alert_analysis') onAnalysis(data);
+  }
+
+  /* Générateur de trafic */
+  function nowIso() { return new Date().toISOString(); }
+  function emitEvent(machine, type, user) {
+    var ev = { machine: machine || pick(MACHINES), type: type || pick(TYPES), timestamp: nowIso() };
+    var u = user === undefined ? pick(USERS) : user;
+    if (u) ev.user = u;
+    dispatch({ type: 'new_event', event: ev });
+  }
+  function emitAlert(pattern, severity, machine, message, analysis, delay) {
+    dispatch({ type: 'new_alert', alert: { pattern: pattern, severity: severity, machine: machine, message: message, timestamp: nowIso() } });
+    setTimeout(function () {
+      dispatch({ type: 'alert_analysis', alertPattern: pattern, machine: machine, analysis: analysis });
+    }, delay || 1500);
+  }
+
+  // Le trafic de fond ne tourne que lorsque la démo est visible et l'onglet actif
+  var demoVisible = false;
+  var trafficTimer = 0;
+  function traffic() {
+    clearTimeout(trafficTimer);
+    if (!demoVisible || document.hidden) return;
+    emitEvent();
+    trafficTimer = setTimeout(traffic, 900 + Math.random() * 1100);
+  }
+  var demoEl = document.getElementById('demo');
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      demoVisible = entries[0].isIntersecting;
+      if (demoVisible) traffic(); else clearTimeout(trafficTimer);
+    }, { threshold: 0.15 }).observe(demoEl);
+  } else {
+    demoVisible = true;
+    traffic();
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) traffic(); });
+
+  var running = false;
+  var runBtn = document.getElementById('runScenario');
+  runBtn.addEventListener('click', function () {
+    if (running) return;
+    running = true;
+    runBtn.setAttribute('aria-disabled', 'true');
+    var steps = [];
+    for (var i = 0; i < 6; i++) steps.push(function () { emitEvent('machine-03', 'login_failed', 'admin'); });
+    steps.push(function () {
+      emitAlert('brute_force', 'high', 'machine-03', '6 échecs de connexion pour « admin » en 4 s',
+        "Rafale d'échecs sur un compte privilégié : attaque par force brute probable. Verrouiller le compte admin et vérifier les journaux d'authentification.");
+    });
+    steps.push(function () { emitEvent('machine-03', 'login_success', 'admin'); });
+    steps.push(function () { emitEvent('machine-04', 'network_connection', 'admin'); });
+    steps.push(function () { emitEvent('machine-05', 'network_connection', 'admin'); });
+    steps.push(function () {
+      emitAlert('lateral_movement', 'critical', 'machine-04', 'Le compte admin rebondit de machine-03 vers machine-04 et machine-05',
+        'Déplacement latéral après compromission : isoler machine-03 et machine-04, révoquer les sessions admin et lancer une analyse forensique.', 2000);
+    });
+    steps.forEach(function (fn, i) { setTimeout(fn, i * 450); });
+    setTimeout(function () { running = false; runBtn.removeAttribute('aria-disabled'); }, steps.length * 450 + 2200);
+  });
+
+  document.getElementById('exportReport').addEventListener('click', function () {
+    if (incidentLog.length === 0) { alert("Aucune alerte pour le moment : lancez d'abord un scénario d'attaque."); return; }
+    var report = "# Rapport d'incident — MiniSOC (démo)\n\nGénéré le " + new Date().toLocaleString('fr-FR') + '\n\n';
+    report += '## Résumé\n\n' + incidentLog.length + ' alerte(s) détectée(s) durant cette session.\n\n';
+    report += '| Gravité | Type | Machine | Heure |\n|---|---|---|---|\n';
+    incidentLog.forEach(function (e) { report += '| ' + e.severity + ' | ' + e.pattern + ' | ' + e.machine + ' | ' + clock(e.timestamp) + ' |\n'; });
+    report += '\n## Détail des alertes\n\n';
+    incidentLog.forEach(function (e, i) {
+      report += '### ' + (i + 1) + '. ' + e.pattern.toUpperCase() + ' (' + e.severity + ')\n\n';
+      report += '**Machine concernée :** ' + e.machine + '\n\n';
+      report += '**Description :** ' + e.message + '\n\n';
+      report += '**Analyse IA :** ' + (e.analysis || 'Non disponible') + '\n\n---\n\n';
+    });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([report], { type: 'text/markdown' }));
+    link.download = 'rapport-incident-minisoc-demo.md';
+    link.click();
+    setTimeout(function () { URL.revokeObjectURL(link.href); }, 1000);
+  });
+})();
+</script>
+</body>
+</html>
