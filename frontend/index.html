@@ -24,7 +24,6 @@
     --high: #f26b1d;
     --crit: #ff4d5e;
     --ok: #3ddc84;
-    --ai: #c9d6ff;
 
     /* Console : thème sombre (référence) */
     --bg: #000;
@@ -33,11 +32,20 @@
     --text-3: #8a8a8a;
     --border: rgba(255, 255, 255, 0.12);
     --border-strong: rgba(255, 255, 255, 0.22);
-    --glass: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.55) 50%, rgba(160, 175, 200, 0.05));
-    --glass-hi: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    --glass: linear-gradient(160deg, rgba(255, 255, 255, 0.075) 0%, rgba(255, 255, 255, 0.025) 42%, rgba(255, 255, 255, 0.045) 100%);
+    --glass-blur: blur(28px) saturate(140%);
+    --glass-border: rgba(255, 255, 255, 0.09);
+    --glass-edge: linear-gradient(155deg, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0.05) 32%, rgba(255, 255, 255, 0.02) 68%, rgba(255, 255, 255, 0.16));
+    --glass-sheen: radial-gradient(120% 70% at 0% 0%, rgba(255, 255, 255, 0.07), transparent 58%);
+    --glass-hi: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 40px 80px -40px rgba(0, 0, 0, 0.9);
     --row: rgba(255, 255, 255, 0.035);
     --row-border: rgba(255, 255, 255, 0.07);
-    --topbar: rgba(0, 0, 0, 0.6);
+    --topbar: rgba(0, 0, 0, 0.45);
+    --focus: rgba(255, 255, 255, 0.85);
+    --light-a: rgba(255, 255, 255, 0.16);
+    --light-b: rgba(255, 255, 255, 0.09);
+    --light-c: rgba(255, 255, 255, 0.10);
+    --grid-line: rgba(255, 255, 255, 0.028);
     --metal: linear-gradient(105deg, #050505 0%, #2a2a2a 48%, #4a4a4a 100%);
     --metal-hover: linear-gradient(105deg, #111 0%, #3a3a3a 45%, #6a6a6a 100%);
     --metal-border: rgba(198, 198, 198, 0.55);
@@ -55,13 +63,22 @@
     --text-3: #6b6b70;
     --border: rgba(0, 0, 0, 0.1);
     --border-strong: rgba(0, 0, 0, 0.2);
-    --glass: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7) 50%, rgba(225, 230, 240, 0.8));
-    --glass-hi: inset 0 1px 0 #fff, 0 20px 40px -24px rgba(20, 25, 40, 0.25);
+    --glass: linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.52) 45%, rgba(255, 255, 255, 0.66) 100%);
+    --glass-blur: blur(28px) saturate(160%);
+    --glass-border: rgba(0, 0, 0, 0.07);
+    --glass-edge: linear-gradient(155deg, #ffffff, rgba(255, 255, 255, 0.4) 40%, rgba(0, 0, 0, 0.06) 100%);
+    --glass-sheen: radial-gradient(120% 70% at 0% 0%, rgba(255, 255, 255, 0.7), transparent 60%);
+    --glass-hi: inset 0 1px 0 #fff, 0 30px 60px -36px rgba(10, 10, 15, 0.3);
     --row: rgba(0, 0, 0, 0.03);
     --row-border: rgba(0, 0, 0, 0.07);
-    --topbar: rgba(242, 242, 244, 0.72);
+    --topbar: rgba(242, 242, 244, 0.6);
+    --focus: #111;
+    --light-a: rgba(255, 255, 255, 0.95);
+    --light-b: rgba(0, 0, 0, 0.05);
+    --light-c: rgba(255, 255, 255, 0.8);
+    --grid-line: rgba(0, 0, 0, 0.035);
     --metal: linear-gradient(105deg, #ffffff 0%, #ececec 48%, #d6d6d6 100%);
-    --metal-hover: linear-gradient(105deg, #ffffff 0%, #f2f4fa 45%, #d9dfeb 100%);
+    --metal-hover: linear-gradient(105deg, #ffffff 0%, #f4f4f4 45%, #dedede 100%);
     --metal-border: rgba(0, 0, 0, 0.18);
     --metal-text: #111;
     --node-fill: #ffffff;
@@ -78,13 +95,22 @@
       --text-3: #6b6b70;
       --border: rgba(0, 0, 0, 0.1);
       --border-strong: rgba(0, 0, 0, 0.2);
-      --glass: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7) 50%, rgba(225, 230, 240, 0.8));
-      --glass-hi: inset 0 1px 0 #fff, 0 20px 40px -24px rgba(20, 25, 40, 0.25);
+      --glass: linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.52) 45%, rgba(255, 255, 255, 0.66) 100%);
+      --glass-blur: blur(28px) saturate(160%);
+      --glass-border: rgba(0, 0, 0, 0.07);
+      --glass-edge: linear-gradient(155deg, #ffffff, rgba(255, 255, 255, 0.4) 40%, rgba(0, 0, 0, 0.06) 100%);
+      --glass-sheen: radial-gradient(120% 70% at 0% 0%, rgba(255, 255, 255, 0.7), transparent 60%);
+      --glass-hi: inset 0 1px 0 #fff, 0 30px 60px -36px rgba(10, 10, 15, 0.3);
       --row: rgba(0, 0, 0, 0.03);
       --row-border: rgba(0, 0, 0, 0.07);
-      --topbar: rgba(242, 242, 244, 0.72);
+      --topbar: rgba(242, 242, 244, 0.6);
+      --focus: #111;
+      --light-a: rgba(255, 255, 255, 0.95);
+      --light-b: rgba(0, 0, 0, 0.05);
+      --light-c: rgba(255, 255, 255, 0.8);
+      --grid-line: rgba(0, 0, 0, 0.035);
       --metal: linear-gradient(105deg, #ffffff 0%, #ececec 48%, #d6d6d6 100%);
-      --metal-hover: linear-gradient(105deg, #ffffff 0%, #f2f4fa 45%, #d9dfeb 100%);
+      --metal-hover: linear-gradient(105deg, #ffffff 0%, #f4f4f4 45%, #dedede 100%);
       --metal-border: rgba(0, 0, 0, 0.18);
       --metal-text: #111;
       --node-fill: #ffffff;
@@ -108,7 +134,7 @@
   a { color: inherit; text-decoration: none; }
   button { font-family: inherit; color: inherit; }
   svg { display: block; flex-shrink: 0; }
-  :focus-visible { outline: 2px solid #8fb0ff; outline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--focus, #fff); outline-offset: 3px; }
 
   .grain {
     position: fixed;
@@ -168,9 +194,9 @@
     transition: transform 0.6s ease;
     pointer-events: none;
   }
-  .pill:hover { background: var(--metal-hover); border-color: rgba(235, 235, 235, 0.9); box-shadow: 0 0 18px rgba(200, 210, 230, 0.18); }
+  .pill:hover { background: var(--metal-hover); border-color: rgba(235, 235, 235, 0.9); box-shadow: 0 0 18px rgba(255, 255, 255, 0.14); }
   .pill:hover::before { transform: translateX(120%); }
-  .pill[aria-current="page"] { border-color: rgba(235, 235, 235, 0.95); box-shadow: 0 0 18px rgba(200, 210, 230, 0.2); }
+  .pill[aria-current="page"] { border-color: rgba(235, 235, 235, 0.95); box-shadow: 0 0 18px rgba(255, 255, 255, 0.16); }
   .pill svg { width: 15px; height: 15px; }
 
   .btn {
@@ -212,25 +238,25 @@
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
   }
   .btn-solid:hover {
-    background: linear-gradient(180deg, #fff 0%, #f3f6ff 42%, #d5def2 100%);
-    border-color: #f2f6ff;
-    box-shadow: inset 0 1px 0 #fff, 0 0 22px rgba(186, 208, 255, 0.35), 0 8px 18px rgba(255, 255, 255, 0.12);
+    background: linear-gradient(180deg, #fff 0%, #f6f6f6 42%, #dcdcdc 100%);
+    border-color: #fff;
+    box-shadow: inset 0 1px 0 #fff, 0 0 24px rgba(255, 255, 255, 0.28), 0 8px 18px rgba(255, 255, 255, 0.1);
   }
   .btn-ghost {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.45) 50%, rgba(160, 175, 200, 0.08));
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.45) 50%, rgba(255, 255, 255, 0.06));
     color: #fff;
     border: 1px solid rgba(198, 198, 198, 0.45);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
   .btn-ghost:hover {
-    background: linear-gradient(135deg, rgba(210, 225, 255, 0.18), rgba(0, 0, 0, 0.35) 48%, rgba(180, 195, 220, 0.16));
-    border-color: rgba(220, 230, 255, 0.75);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 0 20px rgba(170, 200, 255, 0.22);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.35) 48%, rgba(255, 255, 255, 0.12));
+    border-color: rgba(255, 255, 255, 0.75);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 0 20px rgba(255, 255, 255, 0.16);
   }
   .btn-frost { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-color: rgba(198, 198, 198, 0.55); }
-  :root[data-theme="light"] .view-console .btn-ghost { color: #111; background: linear-gradient(135deg, #fff, #f0f0f2 50%, #e4e8f0); border-color: rgba(0, 0, 0, 0.16); }
+  :root[data-theme="light"] .view-console .btn-ghost { color: #111; background: linear-gradient(135deg, #fff, #f2f2f2 50%, #e6e6e6); border-color: rgba(0, 0, 0, 0.16); }
   @media (prefers-color-scheme: light) {
-    :root:not([data-theme]) .view-console .btn-ghost { color: #111; background: linear-gradient(135deg, #fff, #f0f0f2 50%, #e4e8f0); border-color: rgba(0, 0, 0, 0.16); }
+    :root:not([data-theme]) .view-console .btn-ghost { color: #111; background: linear-gradient(135deg, #fff, #f2f2f2 50%, #e6e6e6); border-color: rgba(0, 0, 0, 0.16); }
   }
 
   .badge {
@@ -366,7 +392,7 @@
   .welcome-lede strong { color: #e8e8e8; font-weight: 500; }
   .welcome-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 26px; }
   .welcome-actions .btn { height: 44px; padding: 0 20px; }
-  .welcome-actions .btn-solid:hover { box-shadow: inset 0 1px 0 #fff, 0 0 26px rgba(186, 208, 255, 0.4), 0 8px 18px rgba(255, 255, 255, 0.14); }
+  .welcome-actions .btn-solid:hover { box-shadow: inset 0 1px 0 #fff, 0 0 28px rgba(255, 255, 255, 0.32), 0 8px 18px rgba(255, 255, 255, 0.12); }
   .kbd-hint { margin-top: 18px; font-size: 12px; color: #7a7a7a; }
   .kbd-hint kbd { font-family: var(--mono); font-size: 11px; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.18); color: #bdbdbd; }
 
@@ -477,34 +503,90 @@
 
   .glass {
     position: relative;
-    border-radius: 12px;
-    border: 1px solid var(--border);
+    isolation: isolate;
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
     background: var(--glass);
+    -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
     box-shadow: var(--glass-hi);
-    transition: border-color 0.35s ease, box-shadow 0.35s ease;
+    transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.5s var(--ease);
   }
+  /* Reflet en haut à gauche, sous le contenu */
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--glass-sheen);
+    pointer-events: none;
+  }
+  /* Liseré lumineux : plus clair en haut à gauche, comme une arête de verre */
+  .glass::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--glass-edge);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    pointer-events: none;
+  }
+  .kpi.glass:hover { transform: translateY(-2px); }
+
+  /* Éclairage de fond de la console : c'est lui que le verre floute */
+  .console-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(55% 45% at 12% 8%, var(--light-a), transparent 62%),
+      radial-gradient(45% 40% at 88% 32%, var(--light-b), transparent 62%),
+      radial-gradient(70% 45% at 50% 105%, var(--light-c), transparent 66%);
+    animation: drift 28s ease-in-out infinite alternate;
+  }
+  .console-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 72px 72px;
+    -webkit-mask-image: radial-gradient(80% 70% at 50% 30%, #000, transparent 85%);
+    mask-image: radial-gradient(80% 70% at 50% 30%, #000, transparent 85%);
+  }
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(-2%, 1.5%, 0) scale(1.06); }
+  }
+  .view-console > .console { position: relative; z-index: 1; }
   .card-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    padding: 14px 18px 12px;
+    padding: 16px 20px 14px;
     border-bottom: 1px solid var(--row-border);
   }
-  .card-head h2 { display: inline-flex; align-items: center; gap: 10px; font-size: 14.5px; font-weight: 500; letter-spacing: -0.02em; }
-  .card-head h2 svg { width: 16px; height: 16px; color: var(--text-2); }
+  .card-head h2 { display: inline-flex; align-items: center; gap: 10px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-2); }
+  .card-head h2 svg { width: 15px; height: 15px; color: var(--text); }
   .count { font-size: 12px; color: var(--text-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
   /* KPI */
   .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-  .kpi { padding: 20px 22px 18px; overflow: hidden; }
-  .kpi .label { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--text-2); }
+  .kpi { padding: 22px 24px 20px; overflow: hidden; }
+  .kpi .label { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-2); }
   .kpi .label svg { width: 16px; height: 16px; color: var(--text-3); }
   .kpi .num {
     margin-top: 14px;
-    font-size: clamp(40px, 3.6vw, 60px);
-    font-weight: 500;
-    letter-spacing: -0.05em;
+    font-size: clamp(42px, 3.8vw, 64px);
+    font-weight: 300;
+    letter-spacing: -0.055em;
     line-height: 1;
     font-variant-numeric: tabular-nums;
   }
@@ -532,7 +614,7 @@
   .net .core.is-high .core-body { stroke: var(--high); stroke-width: 1.6; }
   .net .core.is-crit .core-body { stroke: var(--crit); stroke-width: 1.6; }
   .net .pulse { fill: #fff; filter: url(#glow); }
-  :root[data-theme="light"] .net .pulse { fill: #1f5eff; }
+  :root[data-theme="light"] .net .pulse { fill: #111; }
   .net .wave { fill: none; stroke-width: 1.5; vector-effect: non-scaling-stroke; transform-box: fill-box; transform-origin: center; animation: wave 1.6s var(--ease) forwards; }
   @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.12); opacity: 1; } }
   @keyframes wave { from { transform: scale(1); opacity: 0.95; } to { transform: scale(5.5); opacity: 0; } }
@@ -540,50 +622,28 @@
   .net-legend span { display: inline-flex; align-items: center; gap: 7px; }
   .net-legend i { width: 8px; height: 8px; border-radius: 50%; }
 
-  /* Fréquence */
-  .freq { padding: 16px 18px 18px; }
-  .freq-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
-  .freq-top .title { font-size: 14.5px; font-weight: 500; letter-spacing: -0.02em; display: inline-flex; align-items: center; gap: 10px; }
-  .freq-value { display: flex; align-items: baseline; gap: 8px; }
-  .freq-value .num { font-size: 32px; font-weight: 500; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
-  .freq-value .lbl { font-size: 11.5px; color: var(--text-3); max-width: 13em; line-height: 1.35; }
-  .freq-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: 3px;
-    height: 96px;
-    margin-top: 14px;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  }
-  .freq-bar {
-    flex: 1 1 0;
-    height: 100%;
-    border-radius: 2px;
-    background: linear-gradient(to top, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.85));
-    transform-origin: 50% 100%;
-    transform: scaleY(0.15);
-    will-change: transform;
-    transition: background 0.35s ease;
-  }
-  :root[data-theme="light"] .freq-bar { background: linear-gradient(to top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)); }
-  .freq-bar.spike { background: linear-gradient(to top, var(--high), var(--crit)); }
-
   /* Terminal (toujours sombre) */
   .terminal {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     padding: 0;
     overflow: hidden;
-    background: linear-gradient(135deg, rgba(20, 20, 24, 0.96), rgba(4, 4, 6, 0.98));
-    border-color: rgba(255, 255, 255, 0.12);
+    background: linear-gradient(160deg, rgba(22, 22, 26, 0.82), rgba(4, 4, 6, 0.9));
+    border-color: rgba(255, 255, 255, 0.1);
     color: #e6e6e6;
   }
+  .terminal::before { background: radial-gradient(120% 70% at 0% 0%, rgba(255, 255, 255, 0.06), transparent 58%); }
+  .terminal::after { background: linear-gradient(155deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.04) 35%, rgba(255, 255, 255, 0.12)); }
   .terminal .card-head { border-bottom-color: rgba(255, 255, 255, 0.08); }
-  .terminal .card-head h2, .terminal .card-head h2 svg { color: #e6e6e6; }
+  .terminal .card-head h2 { color: #a1a1a1; }
+  .terminal .card-head h2 svg { color: #e6e6e6; }
   .term-body {
     padding: 12px 18px 16px;
     font-family: var(--mono);
     font-size: 12.5px;
     line-height: 1.7;
+    flex: 1;
     min-height: 150px;
     display: flex;
     flex-direction: column;
@@ -682,11 +742,11 @@
     margin-left: 18px;
     line-height: 1.5;
     color: var(--text-2);
-    border-color: rgba(143, 176, 255, 0.28);
-    background: rgba(143, 176, 255, 0.06);
+    border-color: var(--border-strong);
+    background: var(--row);
     overflow-wrap: anywhere;
   }
-  .ai-analysis svg { width: 16px; height: 16px; margin-top: 2px; color: #8fb0ff; }
+  .ai-analysis svg { width: 16px; height: 16px; margin-top: 2px; color: var(--text); }
   .ai-analysis strong { color: var(--text); font-weight: 500; }
 
   .event { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -852,6 +912,7 @@
 
 <!-- ======================= Page 2 : Console ======================= -->
 <section class="view view-console" id="viewConsole" aria-label="Console" hidden>
+  <div class="console-bg" aria-hidden="true"></div>
   <header class="topbar">
     <div class="topbar-inner">
       <a class="logo" href="#accueil" aria-label="MiniSOC, retour à l'accueil">
@@ -929,7 +990,7 @@
         <svg class="net" id="net" viewBox="0 0 600 360" role="img" aria-label="Le serveur central et les machines surveillées">
           <defs>
             <radialGradient id="coreGrad" cx="35%" cy="30%"><stop offset="0" stop-color="#5a5a5a"/><stop offset="1" stop-color="#0a0a0a"/></radialGradient>
-            <radialGradient id="haloGrad"><stop offset="0" stop-color="#8fa8ff" stop-opacity=".25"/><stop offset="1" stop-color="#8fa8ff" stop-opacity="0"/></radialGradient>
+            <radialGradient id="haloGrad"><stop offset="0" stop-color="#ffffff" stop-opacity=".18"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
             <filter id="glow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           </defs>
           <g id="netLinks"></g>
@@ -942,25 +1003,17 @@
           <g id="netFx"></g>
         </svg>
         <div class="net-legend" aria-hidden="true">
-          <span><i style="background:#fff"></i>Événement</span>
+          <span><i style="background:var(--text)"></i>Événement</span>
           <span><i style="background:var(--high)"></i>Alerte haute</span>
           <span><i style="background:var(--crit)"></i>Alerte critique</span>
         </div>
       </section>
 
       <div class="stack">
-        <section class="glass freq" id="freqShell" aria-label="Trafic surveillé">
-          <div class="freq-top">
-            <span class="title"><span class="live-dot" aria-hidden="true"></span>Trafic surveillé</span>
-            <div class="freq-value"><div class="num" id="freqRate">72</div><div class="lbl">paquets analysés / min (simulé)</div></div>
-          </div>
-          <div class="freq-bars" id="freqBars" aria-hidden="true"></div>
-        </section>
-
         <section class="glass terminal" aria-label="Flux brut">
           <div class="card-head">
             <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 7 5 5-5 5M12 19h7"/></svg>minisoc — flux central</h2>
-            <span class="count" style="color:#3ddc84">live</span>
+            <span class="count" style="color:var(--ok)">live</span>
           </div>
           <div class="term-body">
             <ul class="term-history" id="termHistory" aria-hidden="true"></ul>
@@ -1058,7 +1111,7 @@
     document.body.dataset.view = name === 'console' ? 'console' : 'welcome';
     document.title = name === 'console' ? 'MiniSOC — Console' : 'MiniSOC — Bienvenue';
     const reveal = () => {
-      if (prev) { prev.hidden = true; prev.classList.remove('is-leaving'); }
+      Object.values(views).forEach(v => { if (v !== next) { v.hidden = true; v.classList.remove('is-leaving'); } });
       next.hidden = false;
       window.scrollTo(0, 0);
       if (!reduceMotion()) {
@@ -1104,39 +1157,6 @@
   document.getElementById('welcomeGreeting').textContent = greeting() + ' · votre centre de sécurité';
   tickClock();
   setInterval(tickClock, 1000);
-
-  /* ================= Analyseur de fréquence ================= */
-  const freqShell = document.getElementById('freqShell');
-  const freqBarsEl = document.getElementById('freqBars');
-  const NUM_BARS = window.innerWidth < 768 ? 36 : 56;
-  const FREQ_MAX = 130;
-  const freqBars = [];
-  for (let i = 0; i < NUM_BARS; i++) {
-    const bar = document.createElement('div');
-    bar.className = 'freq-bar';
-    freqBarsEl.appendChild(bar);
-    freqBars.push(bar);
-  }
-  function setBar(bar, h) { bar.style.transform = 'scaleY(' + Math.min(1, h / FREQ_MAX).toFixed(3) + ')'; }
-  freqBars.forEach((bar, i) => setBar(bar, 10 + Math.abs(Math.sin(i * 0.35)) * 40));
-  let freqPhase = 0;
-  let freqRaf = 0;
-  function animateFreq() {
-    freqRaf = 0;
-    if (currentView !== 'console' || document.hidden || reduceMotion()) return;
-    freqPhase += 0.09;
-    freqBars.forEach((bar, i) => {
-      if (!bar.classList.contains('spike')) setBar(bar, 10 + Math.abs(Math.sin(freqPhase + i * 0.35)) * 40 + Math.random() * 8);
-    });
-    freqRaf = requestAnimationFrame(animateFreq);
-  }
-  function startFreq() { if (!freqRaf) freqRaf = requestAnimationFrame(animateFreq); }
-  window.addEventListener('hashchange', () => setTimeout(startFreq, 500));
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) startFreq(); });
-  function spikeFreq() {
-    freqBars.forEach(bar => { bar.classList.add('spike'); setBar(bar, 90 + Math.random() * 40); });
-    setTimeout(() => freqBars.forEach(bar => bar.classList.remove('spike')), 350);
-  }
 
   /* ================= Compteurs animés ================= */
   const countAnim = new WeakMap();
@@ -1254,7 +1274,7 @@
       const li = document.createElement('li');
       renderTerm(li, termPrev, false);
       termHistory.append(li);
-      while (termHistory.children.length > 5) termHistory.firstElementChild.remove();
+      while (termHistory.children.length > 15) termHistory.firstElementChild.remove();
     }
     termPrev = entry;
     renderTerm(terminalLine, entry, true);
@@ -1373,7 +1393,6 @@
     updateStats();
     updateAlertsCount();
 
-    spikeFreq();
     pushTerminalLine(`ALERTE ${alertData.pattern} sur ${alertData.machine} — ${alertData.message}`, true);
 
     // Réaction visuelle sur la carte du réseau + toast si on est sur l'accueil
@@ -1471,7 +1490,6 @@
   /* ================= Démarrage ================= */
   if (reduceMotion()) { const v = document.getElementById('heroVideo'); v.removeAttribute('autoplay'); v.pause(); }
   route();
-  startFreq();
   updateStats();
   connect();
 </script>
