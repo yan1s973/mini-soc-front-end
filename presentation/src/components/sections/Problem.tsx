@@ -21,7 +21,7 @@ const challenges: Challenge[] = [
   {
     icon: Database,
     question: 'Récupérer les données',
-    answer: 'Flux Bitcoin réel via CoinGecko, avec un cache Redis en cas de panne.',
+    answer: 'Un flux de données réel, interrogé en continu, avec un cache Redis en cas de panne.',
   },
   {
     icon: BrainCircuit,
@@ -36,22 +36,22 @@ const challenges: Challenge[] = [
   {
     icon: Activity,
     question: 'Détecter les dérives',
-    answer: 'Deux méthodes statistiques doivent être d’accord avant d’agir.',
+    answer: 'Deux méthodes statistiques doivent s’accorder avant toute action.',
   },
   {
     icon: GitCompareArrows,
     question: 'Comparer les candidats',
-    answer: '4 architectures s’affrontent, la meilleure défie le modèle actif.',
+    answer: 'Quatre architectures sont entraînées, la meilleure est comparée au modèle en service.',
   },
   {
     icon: Workflow,
     question: 'Corriger sans bloquer',
-    answer: 'Le réentraînement tourne dans un worker séparé, via une queue.',
+    answer: 'Le réentraînement s’exécute à part, pendant que le service continue de fonctionner.',
   },
   {
     icon: ShieldCheck,
-    question: 'Prouver que ça marche',
-    answer: 'Faux positifs et délai de détection sont mesurés, pas supposés.',
+    question: 'Évaluer les performances',
+    answer: 'Fausses alertes et délai de détection sont calculés à partir des données enregistrées.',
   },
 ]
 
@@ -62,14 +62,14 @@ export function Problem() {
         tag="Pourquoi ce projet"
         title={
           <>
-            Créer un modèle est facile. Le faire vivre{' '}
-            <em className="italic">en production</em>, beaucoup moins.
+            Comment fonctionne vraiment une IA{' '}
+            <em className="italic">une fois déployée</em> ?
           </>
         }
       >
-        Comment fonctionne vraiment une IA une fois déployée ? Dans une
-        entreprise, le plus difficile n'est pas le modèle : c'est tout ce qu'il
-        y a autour. DataOracle répond à chacune de ces questions.
+        Dans une entreprise, le plus difficile n'est pas de créer le modèle :
+        c'est tout ce qu'il y a autour pour le faire fonctionner dans la durée.
+        DataOracle doit répondre à chacune de ces questions.
       </SectionHeader>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -89,7 +89,7 @@ export function Problem() {
         <Reveal delay={challenges.length * 60}>
           <div className="flex h-full flex-col justify-between rounded-2xl bg-primary p-6">
             <p className="font-serif text-3xl leading-tight text-white">
-              Une plateforme, <em className="italic">sept</em> réponses.
+              Sept questions, <em className="italic">une</em> plateforme.
             </p>
             <a
               href="#fonctionnement"

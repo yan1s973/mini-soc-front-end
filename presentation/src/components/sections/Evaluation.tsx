@@ -11,7 +11,7 @@ type Metric = {
 const metrics: Metric[] = [
   {
     label: 'Taux de faux positifs',
-    context: 'En conditions de marché stables',
+    context: 'Lorsque les données restent stables',
     value: null,
   },
   {
@@ -33,14 +33,15 @@ export function Evaluation() {
         tag="Évaluation quantitative"
         title={
           <>
-            Ne pas affirmer que ça marche.{' '}
-            <em className="italic">Le mesurer.</em>
+            Des performances{' '}
+            <em className="italic">mesurées</em>, chiffres à l'appui
           </>
         }
       >
-        Chaque point est enregistré avec son statut de détection. Un script
-        d'analyse dédié en tire des chiffres concrets sur les performances du
-        système.
+        Chaque prédiction est enregistrée avec le résultat de la détection.
+        Un script d'analyse exploite ensuite ces données pour calculer des
+        indicateurs précis : taux de fausses alertes, délai de détection et
+        accord entre les deux méthodes.
       </SectionHeader>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">

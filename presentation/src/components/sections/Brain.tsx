@@ -11,17 +11,19 @@ export function Brain() {
         <Reveal>
           <Tag>Le cerveau</Tag>
           <h2 className="mt-5 font-serif text-4xl leading-[1.1] text-white md:text-6xl">
-            Un réseau de neurones qui regarde{' '}
-            <em className="italic">les 10 dernières</em> valeurs
+            Prédire la suite à partir de{' '}
+            <em className="italic">l'historique récent</em>
           </h2>
           <p className="mt-6 text-lg text-white/70">
             Le cœur de DataOracle est un réseau de neurones développé avec
-            TensorFlow.js. Il est entraîné sur une fenêtre glissante : à partir
-            des 10 dernières valeurs, il prédit la suivante.
+            TensorFlow.js. Il observe une fenêtre glissante qui contient les 10
+            dernières valeurs de la série, et en déduit la suivante. À chaque
+            nouvelle donnée, la fenêtre avance d'un cran.
           </p>
           <p className="mt-4 text-lg text-white/70">
-            Les prix sont normalisés entre 0 et 1 (min-max) avant
-            l'entraînement, puis remis à l'échelle à la sortie.
+            Avant l'entraînement, les valeurs sont ramenées entre 0 et 1
+            (normalisation min-max) pour que le réseau apprenne sur une échelle
+            stable. Ses prédictions sont ensuite remises à l'échelle d'origine.
           </p>
         </Reveal>
 

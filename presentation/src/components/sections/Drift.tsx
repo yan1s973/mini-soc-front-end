@@ -167,13 +167,13 @@ export function Drift() {
         tag="Détection de dérive"
         title={
           <>
-            Deux méthodes, <em className="italic">pas une supposition</em>
+            Deux méthodes <em className="italic">valent mieux qu'une</em>
           </>
         }
       >
-        Une erreur isolée n'est pas grave. DataOracle ne réagit que si la
-        dérive est réelle et soutenue, et seulement quand deux méthodes
-        complémentaires sont d'accord.
+        Une erreur isolée n'est pas forcément le signe d'un problème.
+        DataOracle ne réagit que lorsque la dégradation est durable, et
+        seulement si deux méthodes complémentaires la détectent.
       </SectionHeader>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -191,15 +191,17 @@ export function Drift() {
             <p className="mt-6 text-white/70">
               Plutôt qu'un seuil fixe, le système recalcule en continu la
               moyenne et l'écart-type des erreurs récentes. Une erreur est
-              anormale si elle dépasse{' '}
+              jugée anormale lorsqu'elle dépasse{' '}
               <code className="rounded bg-black/40 px-1.5 py-0.5 font-mono text-sm text-white">
                 moyenne + 2 × écart-type
               </code>
-              , la définition statistique d'une valeur aberrante.
+              , une règle statistique courante pour repérer les valeurs
+              inhabituelles.
             </p>
             <p className="mt-3 text-white/70">
-              Un compteur d'occurrences consécutives ignore les pics isolés,
-              comme la barre grise ci-dessus.
+              L'alerte n'est retenue que si plusieurs erreurs consécutives
+              franchissent ce seuil : un pic isolé, comme la barre grise
+              ci-dessus, est ignoré.
             </p>
           </Card>
         </Reveal>
@@ -214,14 +216,15 @@ export function Drift() {
               <PageHinkleyChart />
             </div>
             <p className="mt-6 text-white/70">
-              Un algorithme de détection de changement de moyenne issu du
-              traitement du signal (Page, 1954), popularisé pour le{' '}
-              <em>concept drift</em> par Gama et al.
+              Un algorithme qui repère un changement durable de la moyenne.
+              Issu du traitement du signal (Page, 1954), il est aujourd'hui
+              couramment utilisé pour détecter le <em>concept drift</em>, la
+              dérive des données (Gama et al.).
             </p>
             <p className="mt-3 text-white/70">
-              Il cumule les écarts entre chaque erreur et une tolérance, et
-              signale une dérive quand cette somme s'éloigne durablement de son
-              minimum historique, au-delà d'un seuil λ.
+              Il additionne, point après point, l'écart entre chaque erreur et
+              une marge de tolérance. Lorsque ce total s'éloigne de son minimum
+              historique au-delà d'un seuil λ, une dérive est signalée.
             </p>
           </Card>
         </Reveal>
@@ -231,7 +234,7 @@ export function Drift() {
         <div className="grid grid-cols-1 items-center gap-6 rounded-2xl bg-primary p-6 md:grid-cols-[1fr_auto_1fr] md:p-8">
           <div className="flex flex-col gap-3 font-manrope text-sm font-semibold text-white">
             <span className="flex items-center gap-2">
-              <Check className="h-4 w-4" /> Seuil dynamique : anormal
+              <Check className="h-4 w-4" /> Seuil dynamique : dépassé
             </span>
             <span className="flex items-center gap-2">
               <Check className="h-4 w-4" /> Page-Hinkley : changement détecté
@@ -241,8 +244,8 @@ export function Drift() {
             =
           </span>
           <p className="font-serif text-3xl leading-tight text-white">
-            Drift <em className="italic">officiel</em>, réentraînement
-            déclenché.
+            Dérive <em className="italic">confirmée</em>, réentraînement
+            lancé.
           </p>
         </div>
       </Reveal>
@@ -254,9 +257,9 @@ export function Drift() {
             <span className="font-semibold text-white">
               Anomalie ou dérive ?
             </span>{' '}
-            Une erreur isolée mais énorme déclenche une alerte d'anomalie, sans
-            lancer de réentraînement inutile. Seule une dérive progressive et
-            confirmée modifie le modèle.
+            Une erreur ponctuelle mais très élevée déclenche une simple alerte
+            d'anomalie, sans réentraînement inutile. Seule une dérive durable,
+            confirmée par les deux méthodes, conduit à modifier le modèle.
           </p>
         </Card>
       </Reveal>

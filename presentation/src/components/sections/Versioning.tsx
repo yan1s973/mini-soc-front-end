@@ -11,12 +11,15 @@ export function Versioning() {
         tag="Versionnement"
         title={
           <>
-            Des versions <em className="italic">réelles</em>, pas symboliques
+            Chaque version est conservée,{' '}
+            <em className="italic">rien n'est perdu</em>
           </>
         }
       >
-        Chaque déploiement crée une vraie version sur disque : les poids du
-        réseau et ses métadonnées.
+        Chaque fois qu'un nouveau modèle est mis en service, DataOracle en
+        garde une copie complète, à la manière de l'historique des versions
+        d'un document. Si une nouvelle version se comporte moins bien que
+        prévu, on revient à la précédente en un instant.
       </SectionHeader>
 
       <Reveal>
@@ -49,13 +52,17 @@ export function Versioning() {
             <p className="font-cabin text-sm font-medium text-lavender">
               Ce qui est sauvegardé
             </p>
+            <p className="mt-3 text-white/70">
+              Trois fichiers par version : la structure du réseau, ce qu'il a
+              appris et une fiche d'identité.
+            </p>
             <pre className="mt-4 overflow-x-auto rounded-xl bg-black/60 p-4 font-mono text-sm leading-relaxed text-white/80">
 {`models/
 └── v4/
-    ├── model.json     # architecture
-    ├── weights.bin    # poids du réseau
-    └── metadata.json  # date, erreur au switch,
-                       # architecture gagnante`}
+    ├── model.json     # structure du réseau
+    ├── weights.bin    # ce que le réseau a appris
+    └── metadata.json  # date, précision,
+                       # architecture retenue`}
             </pre>
           </Card>
         </Reveal>
@@ -63,15 +70,18 @@ export function Versioning() {
           <Card className="flex h-full flex-col justify-center md:p-8">
             <RotateCcw className="h-6 w-6 text-lavender" />
             <h3 className="mt-4 font-serif text-3xl text-white">
-              Un rollback qui ne recalcule rien
+              Revenir en arrière, sans rien recalculer
             </h3>
             <p className="mt-3 text-white/70">
+              Un retour en arrière (rollback) recharge simplement les fichiers
+              d'une version précédente. Le modèle retrouve exactement l'état
+              qu'il avait, sans nouvel entraînement ni approximation.
+            </p>
+            <p className="mt-3 text-sm text-white/50">
+              Côté technique : une seule requête,{' '}
               <code className="rounded bg-black/40 px-1.5 py-0.5 font-mono text-sm text-white">
                 POST /rollback
-              </code>{' '}
-              recharge littéralement les poids sauvegardés d'une version
-              antérieure précise. Pas de réentraînement, pas
-              d'approximation.
+              </code>
             </p>
           </Card>
         </Reveal>

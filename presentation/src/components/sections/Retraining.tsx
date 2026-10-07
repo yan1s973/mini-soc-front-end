@@ -3,14 +3,14 @@ import { Reveal } from '../ui/Reveal'
 import { Card, Section, SectionHeader } from '../ui/Section'
 
 const pipeline = [
-  'Drift détecté : les deux méthodes sont d’accord',
-  'Mise en file d’attente (queue Redis / BullMQ)',
-  'Un worker séparé entraîne 4 architectures candidates',
-  'Chacune est évaluée sur un jeu de validation isolé',
-  'La meilleure devient « challenger »',
-  'Le challenger affronte le modèle actif, le « champion »',
-  'Seul le gagnant devient ou reste champion',
-  'La nouvelle version est sauvegardée sur disque',
+  'Une dérive est confirmée par les deux méthodes',
+  'La demande est placée dans une file d’attente (Redis / BullMQ)',
+  'Un worker dédié entraîne quatre architectures candidates',
+  'Chaque candidat est évalué sur des données qu’il n’a jamais vues',
+  'Le meilleur candidat devient le « challenger »',
+  'Il est comparé au modèle en service, le « champion »',
+  'Le plus performant des deux reste en production',
+  'La version retenue est enregistrée sur disque',
 ]
 
 type Candidate = {
@@ -37,13 +37,14 @@ export function Retraining() {
         tag="Réentraînement"
         title={
           <>
-            AutoML et <em className="italic">champion / challenger</em>
+            Le meilleur modèle, <em className="italic">pas le plus récent</em>
           </>
         }
       >
-        Quand une dérive est confirmée, DataOracle ne réentraîne pas un seul
-        modèle à l'aveugle. Il organise une compétition, et ne déploie un
-        nouveau modèle que s'il bat celui en place.
+        Lorsqu'une dérive est confirmée, DataOracle n'entraîne pas un modèle
+        unique au hasard. Il met plusieurs architectures en concurrence
+        (AutoML) et ne remplace le modèle en service que si le nouveau obtient
+        de meilleurs résultats : c'est le principe champion / challenger.
       </SectionHeader>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -125,8 +126,8 @@ export function Retraining() {
                 <p className="text-xs text-white/50">modèle actif</p>
               </div>
               <p className="col-span-3 mt-2 text-center text-sm text-white/70">
-                Même jeu de validation, jamais vu à l'entraînement. Le meilleur
-                gagne.
+                Les deux modèles sont évalués sur les mêmes données, jamais
+                vues pendant l'entraînement. Le plus précis l'emporte.
               </p>
             </div>
           </Reveal>
@@ -136,13 +137,16 @@ export function Retraining() {
       <Reveal className="mt-4">
         <Card className="text-center md:p-8">
           <p className="font-serif text-2xl leading-snug text-white md:text-3xl">
-            Le service ne s'arrête <em className="italic">jamais</em>.
+            Le service reste disponible{' '}
+            <em className="italic">pendant le réentraînement</em>.
           </p>
           <p className="mx-auto mt-3 max-w-[640px] text-white/70">
-            Le travail lourd est délégué à un worker séparé via une queue
-            Redis. Pendant ce temps, le flux de données et le dashboard
-            continuent de tourner normalement, et le serveur recharge le
-            nouveau modèle dès que le job est terminé.
+            Entraîner de nouveaux modèles demande beaucoup de calcul. Plutôt
+            que de ralentir le serveur principal, DataOracle confie cette tâche
+            à un programme séparé, appelé worker, par l'intermédiaire d'une
+            file d'attente Redis. Les prédictions et le dashboard continuent de
+            fonctionner normalement, puis le serveur charge le nouveau modèle
+            dès que l'entraînement est terminé, sans interruption.
           </p>
         </Card>
       </Reveal>

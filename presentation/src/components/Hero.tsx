@@ -30,14 +30,14 @@ export function Hero() {
         </div>
 
         <h1 className="mt-6 max-w-[1000px] font-serif text-balance text-5xl leading-[1.1] text-white md:text-7xl lg:text-[96px]">
-          L'IA qui prédit, se surveille{' '}
-          <em className="mx-1 italic">et</em> se corrige seule
+          Data <em className="italic">Oracle</em>
         </h1>
 
         <p className="mt-6 max-w-[662px] font-inter text-lg font-normal text-white/70">
-          DataOracle prédit le prix du Bitcoin en temps réel, détecte ses
-          propres dérives avec deux méthodes statistiques et ne déploie un
-          nouveau modèle que s'il bat le précédent.
+          Une plateforme MLOps qui fait vivre un modèle de Machine Learning
+          en conditions réelles : il prédit en continu, surveille la qualité
+          de ses prédictions et se réentraîne lorsqu'elles se dégradent, en ne
+          gardant en service que la version la plus performante.
         </p>
 
         <div className="mt-10 flex flex-col gap-4 sm:flex-row">

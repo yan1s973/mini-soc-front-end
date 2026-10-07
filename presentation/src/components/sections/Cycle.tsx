@@ -8,9 +8,9 @@ type Step = {
 }
 
 const steps: Step[] = [
-  { title: 'Nouvelle donnée', detail: 'Prix Bitcoin réel, CoinGecko' },
+  { title: 'Nouvelle donnée', detail: 'Flux de marché réel' },
   { title: "L'IA prédit", detail: 'Réseau TensorFlow.js' },
-  { title: 'La vraie valeur arrive', detail: 'Le marché répond' },
+  { title: 'La vraie valeur arrive', detail: 'La réalité répond' },
   { title: 'On compare', detail: 'Prédiction contre réalité' },
   { title: 'Erreur calculée', detail: 'Écart mesuré' },
   { title: 'Double détection', detail: 'Deux méthodes en parallèle' },
@@ -24,13 +24,15 @@ export function Cycle() {
         tag="Le cycle temps réel"
         title={
           <>
-            Chaque seconde, <em className="italic">la même boucle</em>
+            Une même boucle, <em className="italic">en continu</em>
           </>
         }
       >
-        Le prix du Bitcoin est rafraîchi toutes les 10 secondes depuis
-        CoinGecko. Redis conserve la dernière valeur connue si l'API tombe. Le
-        cycle ci-dessous se répète en permanence.
+        Toutes les 10 secondes, une nouvelle valeur arrive d'un flux de
+        données de marché réel, et le cycle ci-dessous recommence. Si la
+        source ne répond plus, Redis conserve la dernière valeur connue. Le
+        système a été testé sur le cours du Bitcoin, mais il s'applique à
+        n'importe quelle série de valeurs qui évolue dans le temps.
       </SectionHeader>
 
       <ol className="relative grid gap-4 md:grid-cols-7 md:gap-3">

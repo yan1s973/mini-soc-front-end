@@ -208,7 +208,7 @@ export function Dashboard() {
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/5 px-5 py-4 md:px-6">
             <div className="flex items-center gap-3">
               <span className="font-manrope text-sm font-semibold text-white">
-                DataOracle · BTC/USD
+                DataOracle · flux de marché
               </span>
               <span className="flex items-center gap-2 rounded-full bg-black/50 px-3 py-1 font-cabin text-xs text-white">
                 <span
@@ -273,7 +273,8 @@ export function Dashboard() {
       <Reveal>
         <p className="mt-4 text-center text-sm text-white/40">
           Démonstration simulée dans votre navigateur, avec des données
-          fictives. Le vrai dashboard est alimenté par le flux CoinGecko.
+          fictives. Le vrai dashboard est alimenté par un flux de données de
+          marché réel.
         </p>
       </Reveal>
 
