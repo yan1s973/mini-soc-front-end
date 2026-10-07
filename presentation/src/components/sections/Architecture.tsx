@@ -35,7 +35,7 @@ const bricks: Brick[] = [
   {
     icon: Radio,
     name: 'CoinGecko',
-    role: 'Flux de prix Bitcoin réel, toutes les 10 secondes.',
+    role: 'Flux de données de marché réel, toutes les 10 secondes.',
   },
   {
     icon: Database,

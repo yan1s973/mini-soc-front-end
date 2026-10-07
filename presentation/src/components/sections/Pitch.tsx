@@ -15,8 +15,8 @@ export function Pitch() {
             deux méthodes statistiques complémentaires
           </em>{' '}
           et ne réentraîne que si les deux sont en accord. Le réentraînement
-          met en compétition plusieurs architectures et suit un pattern dans un
-          worker asynchrone qui ne bloque jamais le service. Chaque version est
+          met en compétition plusieurs architectures et s'exécute dans un worker
+          asynchrone qui ne bloque jamais le service. Chaque version est
           rechargeable par un{' '}
           <em className="text-lavender italic">vrai rollback</em>. »
         </blockquote>
