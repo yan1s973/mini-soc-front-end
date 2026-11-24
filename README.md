@@ -1,8 +1,17 @@
-# RELEVÉ — portfolio de Yanis
+# Portfolio de Yanis
 
-Un territoire unique, procédural, qu'on lit, coupe, inonde puis fait fondre.
-La direction de création complète (concept, storyboard, architecture) est dans
-[`docs/DIRECTION.md`](docs/DIRECTION.md).
+Deux expériences dans ce dépôt :
+
+- **`/` — NOYAU** (principale) : un galet de verre et un noyau de métal liquide
+  dans un studio noir & blanc. Le scroll change l'état de la matière (repos,
+  cristal, coque, archipel, fonte) et fait basculer le studio du blanc au noir.
+  Le mot imprimé sur le mur ne se lit qu'à travers le verre. Fiches : `/projets/<slug>`.
+  Textes : [`content/noyau.ts`](content/noyau.ts). Storyboard : [`lib/noyau.ts`](lib/noyau.ts).
+- **`/releve` — RELEVÉ** : la première direction (territoire en courbes de
+  niveau). Direction de création : [`docs/DIRECTION.md`](docs/DIRECTION.md).
+
+Les deux partagent le même contenu (`content/projects.ts`, `content/profile.ts`).
+`?hq` fige la pleine résolution (captures).
 
 ## Lancer
 

@@ -18,7 +18,7 @@ export function Chrome() {
   const [current, setCurrent] = useState(0);
   const pathname = usePathname();
   const router = useRouter();
-  const home = pathname === "/";
+  const home = pathname === "/releve";
 
   useEffect(() => {
     live.hud.x = xRef.current;
@@ -42,14 +42,14 @@ export function Chrome() {
 
   const go = (scene: number, id: string) => {
     if (home) goTo(scene);
-    else router.push(`/#${id}`);
+    else router.push(`/releve#${id}`);
   };
 
   return (
     <>
       <header className="pointer-events-none fixed inset-x-0 top-0 z-30 flex items-start justify-between p-[var(--gutter)]">
         <Link
-          href="/"
+          href="/releve"
           data-ui
           onClick={(e) => {
             if (home) {

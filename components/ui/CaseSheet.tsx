@@ -44,7 +44,7 @@ export function CaseSheet({ r }: { r: Releve }) {
 
   function close() {
     if (live.fromHome) router.back();
-    else router.push(`/#${r.discipline}`);
+    else router.push(`/releve#${r.discipline}`);
   }
 
   const sections: { k: string; label: string; body: React.ReactNode; field: keyof Releve }[] = [

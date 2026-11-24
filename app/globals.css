@@ -211,3 +211,108 @@ body {
     opacity: 0;
   }
 }
+
+/* ================================================================== */
+/* NOYAU — noir & blanc                                                */
+/* ================================================================== */
+:root {
+  --bg: rgb(238 238 236);
+  --fg: rgb(14 14 14);
+  --skew: 0;
+}
+html:has(.nz),
+html:has(.nz) body {
+  background: var(--bg);
+  color: var(--fg);
+}
+.has-cursor,
+.has-cursor * {
+  cursor: none !important;
+}
+.nz ::selection {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* titre cinétique : chaque lettre monte de son masque */
+.split-w {
+  display: inline-flex;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+  margin-right: 0.24em;
+  vertical-align: top;
+}
+.split-w:last-child {
+  margin-right: 0;
+}
+.split-c {
+  display: inline-block;
+  transform: translateY(105%) rotate(8deg);
+  transform-origin: 0 100%;
+  transition: transform 1000ms cubic-bezier(0.2, 0.9, 0.1, 1);
+}
+.split[data-in] .split-c,
+.rise[data-in] .split-c {
+  transform: none;
+}
+
+/* inclinaison selon la vitesse du scroll */
+.skewy {
+  transform: skewY(calc(var(--skew) * -1deg));
+  transition: transform 300ms ease-out;
+}
+
+/* chiffre de chapitre en contour */
+.outline-num {
+  font-family: var(--font-wide);
+  font-stretch: 125%;
+  font-weight: 200;
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--fg);
+}
+
+/* manifeste : les mots s'allument au scroll */
+.manif-w {
+  opacity: clamp(0.12, calc(var(--p, 0) * (var(--n) + 4) - var(--i)), 1);
+  transition: opacity 200ms linear;
+}
+
+/* ligne de projet : le fond se remplit et le texte s'inverse */
+.row {
+  isolation: isolate;
+  transition: color 500ms cubic-bezier(0.7, 0, 0.2, 1), padding 500ms cubic-bezier(0.7, 0, 0.2, 1);
+}
+.row-fill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--fg);
+  transform: scaleY(0);
+  transform-origin: 50% 100%;
+  transition: transform 500ms cubic-bezier(0.7, 0, 0.2, 1);
+}
+.row:hover,
+.row:focus-visible {
+  color: var(--bg);
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.row:hover .row-fill,
+.row:focus-visible .row-fill {
+  transform: scaleY(1);
+}
+
+/* placeholder : hachures, jamais de faux contenu */
+.placeholder {
+  border: 1px solid color-mix(in srgb, var(--fg) 30%, transparent);
+  background-image: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--fg) 16%, transparent) 0 1px, transparent 1px 8px);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px;
+  opacity: 0.8;
+}
+p.placeholder {
+  display: inline-block;
+  padding: 0.6rem 1rem;
+}
