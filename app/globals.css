@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #ece5d5;
+  --color-paper-shade: #d5ccb8;
+  --color-ink: #1c2430;
+  --color-graphite: #6e6a60;
+  --color-red: #c2412d;
+  --color-water: #557ea0;
+  --font-wide: "Archivo Variable", "Archivo", system-ui, sans-serif;
+  --font-serif: "Instrument Serif", "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --ease-pen: cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+:root {
+  --paper-live: #ece5d5;
+  --gutter: clamp(16px, 3.2vw, 48px);
+  color-scheme: light;
+}
+
+html {
+  background: var(--paper-live);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--paper-live);
+  font-family: var(--font-wide);
+  font-stretch: 100%;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-red);
+  color: var(--color-paper);
+}
+
+@layer base {
+  :focus-visible {
+    outline: 1px solid var(--color-red);
+    outline-offset: 4px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Typographie                                                        */
+/* ------------------------------------------------------------------ */
+
+.t-wide {
+  font-family: var(--font-wide);
+  font-stretch: 125%;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+.t-cond {
+  font-family: var(--font-wide);
+  font-stretch: 68%;
+}
+.t-mono {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.t-serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  letter-spacing: -0.005em;
+}
+
+/* chiffre de chapitre : contour seul, échelle extrême */
+.t-ghost {
+  font-family: var(--font-wide);
+  font-stretch: 125%;
+  font-weight: 200;
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--color-ink) 55%, transparent);
+}
+
+/* ------------------------------------------------------------------ */
+/* Couches                                                            */
+/* ------------------------------------------------------------------ */
+
+.experience {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+
+/* hachure « non relevé » */
+.hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, var(--color-ink) 22%, transparent) 0 1px,
+    transparent 1px 7px
+  );
+}
+
+/* légende géologique en CSS, miroir des motifs du shader */
+.legend-0 {
+  background-color: color-mix(in srgb, #c9a36a 40%, var(--color-paper));
+  background-image: radial-gradient(var(--color-ink) 0.8px, transparent 1.2px);
+  background-size: 5px 5px;
+}
+.legend-1 {
+  background-color: color-mix(in srgb, #b98a6a 42%, var(--color-paper));
+  background-image:
+    linear-gradient(var(--color-ink), var(--color-ink)), linear-gradient(var(--color-ink), var(--color-ink));
+  background-size: 7px 1px, 1px 7px;
+  background-position: 0 3px, 3px 0;
+  background-repeat: repeat;
+  background-blend-mode: normal;
+}
+.legend-2 {
+  background-color: color-mix(in srgb, #7d7b74 45%, var(--color-paper));
+  background-image: repeating-linear-gradient(90deg, var(--color-ink) 0 4px, transparent 4px 7px);
+  background-size: 100% 4px;
+  background-repeat: repeat-y;
+  mask: none;
+}
+.legend-3 {
+  background-color: color-mix(in srgb, #8e4a32 48%, var(--color-paper));
+  background-image:
+    linear-gradient(var(--color-ink) 1px, transparent 1px), linear-gradient(90deg, var(--color-ink) 1px, transparent 1px);
+  background-size: 10px 5px, 10px 10px;
+}
+.legend-4 {
+  background-color: color-mix(in srgb, #3a3a3c 55%, var(--color-paper));
+  background-image: repeating-linear-gradient(45deg, var(--color-ink) 0 1px, transparent 1px 4px);
+}
+
+/* révélation ligne à ligne */
+.reveal > * {
+  display: block;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.12s !important;
+  }
+}
+
+/* lignes de titre : montent depuis leur masque quand la section est active */
+.reveal .line {
+  display: block;
+  transform: translateY(105%);
+  transition: transform 1100ms var(--ease-pen);
+}
+.sec[data-active="true"] .reveal .line,
+.sheet .reveal .line {
+  transform: none;
+}
+.sec > div > div,
+.sec > div > svg {
+  transition: opacity 700ms var(--ease-pen);
+}
+.sec[data-active="false"] > div > div {
+  opacity: 0;
+}
+.scale-rule {
+  background-image: repeating-linear-gradient(to bottom, var(--color-ink) 0 1px, transparent 1px 7px);
+  background-color: transparent;
+  width: 7px;
+  mask: linear-gradient(to right, #000 1px, transparent 1px, transparent 3px, #000 3px);
+}
+
+.sheet-panel {
+  box-shadow: -1px 0 0 color-mix(in srgb, var(--color-ink) 40%, transparent), -40px 0 80px -40px rgb(28 36 48 / 0.25);
+  animation: sheet-in 900ms var(--ease-pen) both;
+}
+@keyframes sheet-in {
+  from {
+    transform: translateY(5%);
+    opacity: 0;
+  }
+}
