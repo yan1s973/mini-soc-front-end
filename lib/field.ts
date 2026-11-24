@@ -47,7 +47,9 @@ export const FIELD_GLSL = /* glsl */ `
 #define OCT 5
 #endif
 uniform sampler2D uName;
-uniform float uW[6];
+uniform float uW[6];   // état A (scène courante)
+uniform float uWB[6];  // état B (scène suivante)
+uniform float uMix;    // avancement de la métamorphose A → B
 uniform float uTime;
 uniform float uGrow;
 
@@ -140,14 +142,30 @@ float hLiquid(vec2 p) {
   return h;
 }
 
-float fieldHeight(vec2 p) {
+float heightW(vec2 p, float w[6]) {
   float h = 0.0;
-  if (uW[0] > 0.001) h += uW[0] * hBase(p);
-  if (uW[1] > 0.001) h += uW[1] * hName(p);
-  if (uW[2] > 0.001) h += uW[2] * hTerrace(p);
-  if (uW[3] > 0.001) h += uW[3] * hCaldera(p);
-  if (uW[4] > 0.001) h += uW[4] * hArchi(p);
-  if (uW[5] > 0.001) h += uW[5] * hLiquid(p);
+  if (w[0] > 0.001) h += w[0] * hBase(p);
+  if (w[1] > 0.001) h += w[1] * hName(p);
+  if (w[2] > 0.001) h += w[2] * hTerrace(p);
+  if (w[3] > 0.001) h += w[3] * hCaldera(p);
+  if (w[4] > 0.001) h += w[4] * hArchi(p);
+  if (w[5] > 0.001) h += w[5] * hLiquid(p);
+  return h;
+}
+
+// Front de relevé : la métamorphose balaie le territoire en diagonale,
+// de l'avant-gauche vers l'arrière-droite, au lieu d'un fondu uniforme.
+float sweep(vec2 p) {
+  float s = clamp((p.x - p.y) * 0.32 + 0.5, 0.0, 1.0);
+  return smoothstep(0.0, 1.0, uMix * 1.8 - s * 0.8);
+}
+
+float fieldHeight(vec2 p) {
+  float m = sweep(p);
+  float h;
+  if (m < 0.001) h = heightW(p, uW);
+  else if (m > 0.999) h = heightW(p, uWB);
+  else h = mix(heightW(p, uW), heightW(p, uWB), m);
   return h * uGrow;
 }
 `;
@@ -216,7 +234,29 @@ function sampleName(field: NameField | null, u: number, v: number) {
   return mix(mix(d[y0 * w + x0], d[y0 * w + x1], tx), mix(d[y1 * w + x0], d[y1 * w + x1], tx), ty) / 255;
 }
 
-export function heightAt(x: number, z: number, w: Weights, time: number, grow: number, name: NameField | null) {
+export function sweepAt(x: number, z: number, mixAB: number) {
+  const s = Math.min(1, Math.max(0, (x - z) * 0.32 + 0.5));
+  return smoothstep(0, 1, mixAB * 1.8 - s * 0.8);
+}
+
+/** Miroir de fieldHeight : état A, état B et avancement du front. */
+export function heightAt(
+  x: number,
+  z: number,
+  w: Weights,
+  time: number,
+  grow: number,
+  name: NameField | null,
+  wB: Weights = w,
+  mixAB = 0,
+) {
+  const m = sweepAt(x, z, mixAB);
+  if (m < 0.001) return heightW(x, z, w, time, name) * grow;
+  if (m > 0.999) return heightW(x, z, wB, time, name) * grow;
+  return mix(heightW(x, z, w, time, name), heightW(x, z, wB, time, name), m) * grow;
+}
+
+function heightW(x: number, z: number, w: Weights, time: number, name: NameField | null) {
   let h = 0;
   if (w[0] > 0.001) {
     const n = fbm(x * 1.15 + 3.1, z * 1.15 + 3.1);
@@ -267,7 +307,7 @@ export function heightAt(x: number, z: number, w: Weights, time: number, grow: n
     hl += 0.012 * Math.sin(Math.hypot(x, z) * 14 - time * 1.6);
     h += w[5] * hl;
   }
-  return h * grow;
+  return h;
 }
 
 /* -------------------------------------------------------------------------- */

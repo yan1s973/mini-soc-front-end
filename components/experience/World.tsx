@@ -54,6 +54,10 @@ export function World() {
     return {
       uName: { value: tex },
       uW: { value: [1, 1, 0, 0, 0, 0] },
+      uWB: { value: [1, 1, 0, 0, 0, 0] },
+      uMix: { value: 0 },
+      uLiqA: { value: 0 },
+      uLiqB: { value: 0 },
       uTime: { value: 0 },
       uGrow: { value: 0 },
       uGrowDepth: { value: 0 },
@@ -65,6 +69,7 @@ export function World() {
       uDusk: { value: 0 },
       uPulse: { value: new THREE.Vector4(0, 0, -100, 0) },
       uHi: { value: -1 },
+      uInk: { value: 0 },
     };
   }, [field]);
 

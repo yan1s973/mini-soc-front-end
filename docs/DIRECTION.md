@@ -155,6 +155,11 @@ d'ingénierie · Défis · Résultats · Limites · Liens (GitHub, démo).
 | S7 | 05 Socle | zénith | `base + YANIS` | — | aplatissement → trait |
 | P | Fiche projet | plongée sur la borne | `cut` au droit de la borne | lecture | remontée vers le chapitre |
 
+**Front de relevé.** Une métamorphose n'est pas un fondu : elle *balaie* le bloc en
+diagonale. Derrière une ligne rouge de géomètre, le nouveau paysage est redessiné.
+Une bande gommée précède le trait. Vers 04, le mercure envahit la carte de la même
+façon, et l'encre se tord avant de fondre.
+
 Le défilement pilote un **index de scène continu** `s ∈ [0, 7]`. Le terrain et la caméra sont des
 fonctions de `s`, interpolées entre états voisins. Revenir en arrière rejoue tout à l'envers, sans état caché.
 

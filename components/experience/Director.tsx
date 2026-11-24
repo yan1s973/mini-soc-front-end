@@ -3,7 +3,7 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { BLOCK_DEPTH, STRATUM, heightAt, smoothstep, type Weights } from "@/lib/field";
+import { BLOCK_DEPTH, STRATUM, heightAt, smoothstep } from "@/lib/field";
 import { SCENES } from "@/lib/scenes";
 import { slotPosition } from "@/lib/slots";
 import { live, useUI } from "@/lib/store";
@@ -12,6 +12,10 @@ export interface Uniforms {
   [k: string]: { value: unknown };
   uName: { value: THREE.DataTexture };
   uW: { value: number[] };
+  uWB: { value: number[] };
+  uMix: { value: number };
+  uLiqA: { value: number };
+  uLiqB: { value: number };
   uTime: { value: number };
   uGrow: { value: number };
   uGrowDepth: { value: number };
@@ -23,6 +27,7 @@ export interface Uniforms {
   uDusk: { value: number };
   uPulse: { value: THREE.Vector4 };
   uHi: { value: number };
+  uInk: { value: number };
 }
 
 const damp = (a: number, b: number, lambda: number, dt: number) => a + (b - a) * (1 - Math.exp(-lambda * dt));
@@ -32,7 +37,17 @@ const ease = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
 const PAPER = [0xec, 0xe5, 0xd5];
 const PAPER_SHADE = [0xd5, 0xcc, 0xb8];
 
+// dev uniquement : ?scene=2.5 fige l'index de scène (inspection des transitions)
+const DEBUG_SCENE =
+  process.env.NODE_ENV !== "production" && typeof window !== "undefined"
+    ? (() => {
+        const v = new URLSearchParams(window.location.search).get("scene");
+        return v === null ? null : parseFloat(v);
+      })()
+    : null;
+
 const tmpV = new THREE.Vector3();
+const tmpLook = new THREE.Vector3();
 const ray = new THREE.Raycaster();
 const ndc = new THREE.Vector2();
 
@@ -43,7 +58,6 @@ export function Director({ uniforms }: { uniforms: Uniforms }) {
   const field = useUI((s) => s.nameField);
 
   const st = useRef({
-    weights: [1, 1, 0, 0, 0, 0] as Weights,
     look: new THREE.Vector3(),
     orbit: [4, 0, 0.5],
     shift: [0, 0],
@@ -74,6 +88,7 @@ export function Director({ uniforms }: { uniforms: Uniforms }) {
 
     /* ---------------- scène ---------------- */
     const focus = live.focus;
+    if (DEBUG_SCENE !== null) live.sceneTarget = live.scene = DEBUG_SCENE;
     const target = focus ? focus.scene : live.sceneTarget;
     live.scene = damp(live.scene, target, reduced ? 10 : 2.4, dt);
     const sRaw = Math.min(Math.max(live.scene, 0), SCENES.length);
@@ -84,9 +99,12 @@ export function Director({ uniforms }: { uniforms: Uniforms }) {
     const A = SCENES[i];
     const B = SCENES[i + 1];
 
-    const w = s0.weights;
-    for (let k = 0; k < 6; k++) w[k] = lerp(A.weights[k], B.weights[k], f);
-    uniforms.uW.value = w;
+    // états A et B transmis séparément : le shader balaie de l'un à l'autre
+    uniforms.uW.value = A.weights;
+    uniforms.uWB.value = B.weights;
+    uniforms.uMix.value = f;
+    uniforms.uLiqA.value = A.liquid;
+    uniforms.uLiqB.value = B.liquid;
 
     s0.focusMix = damp(s0.focusMix, focus ? 1 : 0, reduced ? 10 : 2.6, dt);
     const fm = ease(Math.min(1, s0.focusMix));
@@ -107,11 +125,13 @@ export function Director({ uniforms }: { uniforms: Uniforms }) {
     const grow = ease(smoothstep(0.2, 1, intro)) * (1 - smoothstep(0, 0.6, outro));
     uniforms.uGrow.value = grow;
     uniforms.uGrowDepth.value = growDepth;
+    uniforms.uInk.value = smoothstep(0.55, 0.95, outro);
+    const H = (x: number, z: number) => heightAt(x, z, A.weights, live.time, grow, field, B.weights, f);
 
     /* ---------------- borne ouverte ---------------- */
     if (focus) {
       const [fx, fz] = slotPosition(SCENES[focus.scene].id, focus.index, live.time);
-      const fy = heightAt(fx, fz, w, live.time, grow, field);
+      const fy = H(fx, fz);
       s0.focusPos.set(fx, fy, fz);
     }
     cut = lerp(cut, s0.focusPos.x + 0.001, fm);
@@ -124,7 +144,8 @@ export function Director({ uniforms }: { uniforms: Uniforms }) {
     s0.py = damp(s0.py, reduced ? 0 : pointer.y, 2.2, dt);
 
     let r = lerp(A.orbit[0], B.orbit[0], f);
-    let az = lerp(A.orbit[1], B.orbit[1], f) + s0.px * 0.07 * (1 - liquid * 0.5);
+    const breath = reduced ? 0 : Math.sin(live.time * 0.11) * 0.035 * (1 - fm);
+    let az = lerp(A.orbit[1], B.orbit[1], f) + s0.px * 0.07 * (1 - liquid * 0.5) + breath;
     let el = lerp(A.orbit[2], B.orbit[2], f) - s0.py * 0.04;
     s0.look.set(lerp(A.look[0], B.look[0], f), lerp(A.look[1], B.look[1], f), lerp(A.look[2], B.look[2], f));
     let shx = lerp(A.shift[0], B.shift[0], f);
@@ -138,6 +159,18 @@ export function Director({ uniforms }: { uniforms: Uniforms }) {
     shx = lerp(shx, portrait ? 0 : 0.24, fm);
     shy = lerp(shy, portrait ? 0.3 : 0, fm);
 
+    // sortie : la caméra redescend à l'horizon pendant que le bloc s'aplatit —
+    // vu de face, le territoire redevient le trait de la première seconde
+    if (outro > 0) {
+      const oe = ease(Math.min(1, outro));
+      r = lerp(r, 6.4, oe);
+      az = lerp(az, 0, oe);
+      el = lerp(el, 0.22 * (Math.PI / 180), oe);
+      s0.look.lerp(tmpLook.set(0, 0, 0), oe);
+      shx = lerp(shx, 0, oe);
+      shy = lerp(shy, -0.09, oe);
+    }
+
     if (portrait) {
       const aspect = size.width / size.height;
       r *= 1 + (1 / aspect - 1) * 0.62;
@@ -145,6 +178,7 @@ export function Director({ uniforms }: { uniforms: Uniforms }) {
       // portrait : le bloc monte dans la moitié haute, le texte vit dessous
       const up = Math.min(1, Math.max(0, s - 0.5) * 2);
       shy = lerp(0.04, 0.22, up) * (1 - fm) + 0.3 * fm;
+      shy = lerp(shy, -0.09, ease(Math.min(1, outro)));
     }
 
     const ce = Math.cos(el);
@@ -186,7 +220,7 @@ export function Director({ uniforms }: { uniforms: Uniforms }) {
         const t = (hy - o.y) / d.y;
         hx = o.x + d.x * t;
         hz = o.z + d.z * t;
-        hy = heightAt(hx, hz, w, live.time, grow, field);
+        hy = H(hx, hz);
       }
       inside = t0(hx, hz, cut);
     }
@@ -210,7 +244,7 @@ export function Director({ uniforms }: { uniforms: Uniforms }) {
       const t = (cut - o.x) / d.x;
       const y = o.y + d.y * t;
       const z = o.z + d.z * t;
-      const top = heightAt(cut, z, w, live.time, grow, field);
+      const top = H(cut, z);
       if (t > 0 && Math.abs(z) <= 1 && y <= top && y >= -BLOCK_DEPTH) {
         band = Math.min(4, Math.max(0, Math.floor(-y / STRATUM)));
       }
@@ -250,7 +284,7 @@ export function Director({ uniforms }: { uniforms: Uniforms }) {
       let v = focus ? (isFocus ? fm : 0) : (1 - smoothstep(0.12, 0.4, dist)) * smoothstep(0.6, 1, grow);
       const [mx, mz] = slotPosition(m.sceneId, m.index, live.time);
       if (mx > cut + 0.002) v = 0;
-      const my = heightAt(mx, mz, w, live.time, grow, field);
+      const my = H(mx, mz);
       const p = tmpV.set(mx, my, mz).project(camera);
       const x = (p.x * 0.5 + 0.5) * size.width;
       const y = (-p.y * 0.5 + 0.5) * size.height;

@@ -13,6 +13,7 @@ npm run build      # build de production (toutes les fiches en SSG)
 ```
 
 `/?static` force le repli sans WebGL (carte en courbes de niveau, canvas 2D).
+En développement, `/?scene=2.5` fige l'index de scène (inspection d'une transition).
 
 ## Ajouter un projet
 
@@ -20,6 +21,11 @@ Tout se passe dans [`content/projects.ts`](content/projects.ts). Remplacez un
 placeholder (ou ajoutez un objet), renseignez les champs connus, passez
 `status` à `"published"`. **Ne remplissez jamais un champ par supposition** :
 un champ `null` s'affiche volontairement comme une zone hachurée « non relevé ».
+
+Le champ `diagram` décrit le schéma d'architecture : des nœuds posés sur une
+grille (`x` 0-12, `y` 0-8, `kind` : `service` | `store` | `external` | `edge`) et
+des liens (`async: true` pour un flux asynchrone). Il est rendu au trait, dans le
+style de la carte, et se dessine à l'ouverture de la fiche.
 
 La borne apparaît sur le terrain du bon chapitre, la fiche `/releves/<slug>`
 est générée statiquement. Profil et contacts : [`content/profile.ts`](content/profile.ts).

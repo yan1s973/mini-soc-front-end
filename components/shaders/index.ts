@@ -29,9 +29,12 @@ uniform float uLensLift;
 uniform float uCut;
 uniform float uWater;
 uniform float uLiquid;
+uniform float uLiqA;
+uniform float uLiqB;
 uniform float uDusk;
 uniform vec4 uPulse;     // x, z, t0, -
 uniform float uHi;       // strate surlignée
+uniform float uInk;      // sortie : la matière redevient encre
 
 float lensField(vec2 p, float r2) {
   vec2 d = p - uLens.xy;
@@ -138,8 +141,12 @@ void main() {
   col = mix(col, hyps * (0.78 + 0.3 * diff), lens * 0.6);
 
   // courbes de niveau
-  // origine décalée : un terrain plat ne tombe jamais pile sur une courbe
-  float hc = h + 0.0047;
+  // le front de relevé et la part de mercure, propres à ce point du terrain
+  float sw = sweep(p);
+  float liq = mix(uLiqA, uLiqB, sw);
+  // origine décalée : un terrain plat ne tombe jamais pile sur une courbe.
+  // Quand le mercure gagne, l'encre fond : les courbes se tordent avant de disparaître.
+  float hc = h + 0.0047 + liq * (1.0 - liq) * 0.06 * (vnoise(p * 7.0 + uTime * 0.4) - 0.5);
   float minor = iso(hc, 0.012, 0.7);
   float major = iso(hc, 0.06, 1.35);
   float fine = iso(hc, 0.003, 0.6);
@@ -148,7 +155,7 @@ void main() {
   ink *= 0.8 + 0.3 * vnoise(p * 140.0);   // bavure d'encre
   ink *= smoothstep(0.02, 0.35, uGrow);    // l'encre arrive avec le relief
   vec3 inkC = mix(INK, RED * 0.8, lens * 0.35);
-  col = mix(col, inkC, ink * (1.0 - uLiquid));
+  col = mix(col, inkC, ink * (1.0 - liq));
 
   // réticule de la loupe : l'instrument est visible
   float lr = length(p - uLens.xy);
@@ -157,16 +164,17 @@ void main() {
   float ticks = step(0.82, fract(ang / 6.2831853 * 48.0)) * (1.0 - smoothstep(0.0, fwidth(lr) * 1.3, abs(lr - 0.255) - 0.012));
   vec2 cq = abs(p - uLens.xy);
   float cross_ = (1.0 - smoothstep(0.0, fwidth(cq.x) * 1.2, min(cq.x, cq.y))) * step(max(cq.x, cq.y), 0.035) * step(0.008, max(cq.x, cq.y));
-  col = mix(col, RED, max(max(rim, ticks), cross_) * uLens.z * 0.85 * (1.0 - uLiquid));
+  col = mix(col, RED, max(max(rim, ticks), cross_) * uLens.z * 0.85 * (1.0 - liq));
 
   // faille cachée de la caldeira : révélée par la loupe-scanner
-  if (uW[3] > 0.01) {
+  float wCal = mix(uW[3], uWB[3], sw);
+  if (wCal > 0.01) {
     float r = length(p * vec2(1.0, 1.15));
     float wall = exp(-pow((r - 0.58) / 0.13, 2.0));
     float g = smoothstep(0.25, 0.9, calderaGap(p));
     float s = (p.x + p.y) * 70.0;
     float hatch = 1.0 - smoothstep(0.25, 0.25 + fwidth(s) * 1.2, abs(fract(s) - 0.5));
-    float m = g * wall * smoothstep(0.2, 0.7, lens) * smoothstep(0.5, 1.0, uW[3]);
+    float m = g * wall * smoothstep(0.2, 0.7, lens) * smoothstep(0.5, 1.0, wCal);
     col = mix(col, RED, m * (0.25 + 0.65 * hatch));
   }
 
@@ -179,19 +187,30 @@ void main() {
     float ring = exp(-pow((d - R) / w, 2.0));
     float echo = exp(-pow((d - R * 0.62) / (w * 0.6), 2.0)) * 0.45;
     float fade = 1.0 - smoothstep(0.0, 4.0, age);
-    col = mix(col, RED, (ring + echo * minor * 3.0) * fade * (1.0 - uLiquid));
+    col = mix(col, RED, (ring + echo * minor * 3.0) * fade * (1.0 - liq));
   }
 
   // mercure
-  if (uLiquid > 0.001) {
+  if (liq > 0.001) {
     vec3 V = normalize(vPos - cameraPosition);
     vec3 R = reflect(V, n);
     float fres = pow(1.0 - max(dot(-V, n), 0.0), 3.0);
     vec3 metal = studio(R) * (0.72 + 0.35 * fres);
     metal = mix(metal, metal * vec3(1.05, 0.9, 0.85), lens * 0.4);
-    col = mix(col, metal, uLiquid);
+    // mémoire de l'encre : les courbes restent gravées sous le métal
+    metal = mix(metal, PAPER, minor * 0.09 + major * 0.08);
+    col = mix(col, metal, liq);
   }
 
+  // la ligne de front : le géomètre redessine la carte
+  float inFront = step(0.005, uMix) * step(uMix, 0.995);
+  float fw = max(fwidth(sw), 1e-4);
+  float front = 1.0 - smoothstep(fw * 0.35, fw * 1.3, abs(sw - 0.5));
+  float erase = exp(-pow((sw - 0.42) / 0.16, 2.0)); // gomme juste derrière le front
+  col = mix(col, paper * 1.04, erase * 0.35 * inFront * (1.0 - liq));
+  col = mix(col, RED, front * inFront * 0.9);
+
+  col = mix(col, INK, uInk);
   col += (hash(gl_FragCoord.xy) - 0.5) * 0.03;
   gl_FragColor = vec4(col, 1.0);
 }`;
@@ -326,13 +345,18 @@ void main() {
   if (uLiquid > 0.001) {
     vec3 V = normalize(vPos - cameraPosition);
     vec3 R = reflect(V, N);
-    vec3 Rf = normalize(R + vec3(0.0, 0.0, 0.12 * (vnoise(vec2(vU * 9.0, 1.0)) - 0.5)));
-    vec3 metal = studio(Rf) * (0.62 + 0.12 * sh);
+    // lingot poli : normale galbée en hauteur — la bande d'horizon du studio
+    // glisse sur le flanc au lieu d'un aplat
+    vec3 Nf = normalize(N + vec3(0.0, (y + 0.24) * 1.6, 0.0));
+    vec3 Rf = reflect(V, Nf);
+    Rf = normalize(Rf + vec3(0.0, 0.0, 0.1 * (vnoise(vec2(vU * 9.0, 1.0)) - 0.5)));
+    vec3 metal = studio(Rf) * (0.66 + 0.12 * sh);
     metal *= 0.75 + 0.25 * smoothstep(-DEPTH, 0.0, y);
     metal = mix(metal, INK, bl * 0.35);
     col = mix(col, metal, uLiquid);
   }
 
+  col = mix(col, INK, uInk);
   col += (hash(gl_FragCoord.xy) - 0.5) * 0.03;
   gl_FragColor = vec4(col, 1.0);
 }`;

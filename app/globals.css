@@ -186,3 +186,28 @@ body {
     opacity: 0;
   }
 }
+
+/* schéma d'architecture : le trait se tire à la règle à l'ouverture */
+.arch-line {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: arch-draw 1400ms var(--ease-pen) forwards;
+}
+.arch-line[stroke-dasharray="4 3"] {
+  stroke-dasharray: 4 3;
+  animation: arch-fade 900ms var(--ease-pen) both;
+  stroke-dashoffset: 0;
+}
+.arch-node {
+  animation: arch-fade 700ms var(--ease-pen) both;
+}
+@keyframes arch-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes arch-fade {
+  from {
+    opacity: 0;
+  }
+}

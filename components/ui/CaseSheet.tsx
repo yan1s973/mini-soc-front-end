@@ -7,6 +7,7 @@ import { strataById } from "@/content/disciplines";
 import { codeOf, indexOf, relevesOf, type Releve } from "@/content/projects";
 import { SCENE_INDEX } from "@/lib/scenes";
 import { live } from "@/lib/store";
+import { ArchDiagram } from "./ArchDiagram";
 
 /**
  * Fiche de relevé. Le terrain se coupe au droit de la borne pendant que la
@@ -50,7 +51,23 @@ export function CaseSheet({ r }: { r: Releve }) {
     { k: "1", label: "Problème", field: "problem", body: r.problem },
     { k: "2", label: "Concept", field: "concept", body: r.concept },
     { k: "3", label: "Solution", field: "solution", body: r.solution },
-    { k: "4", label: "Architecture", field: "architecture", body: r.architecture },
+    {
+      k: "4",
+      label: "Architecture",
+      field: "architecture",
+      body: (
+        <>
+          {r.architecture ?? <Unrecorded field="architecture" />}
+          {r.diagram ? (
+            <ArchDiagram d={r.diagram} />
+          ) : (
+            <div className="mt-3">
+              <Unrecorded field="diagram" label="schéma non relevé" />
+            </div>
+          )}
+        </>
+      ),
+    },
     { k: "5", label: "Stack technique", field: "stack", body: r.stack && <Inline items={r.stack} /> },
     { k: "6", label: "Décisions d'ingénierie", field: "decisions", body: r.decisions && <List items={r.decisions} /> },
     { k: "7", label: "Défis", field: "challenges", body: r.challenges && <List items={r.challenges} /> },
@@ -157,7 +174,7 @@ export function CaseSheet({ r }: { r: Releve }) {
   );
 }
 
-function Unrecorded({ field, inline = false }: { field: string; inline?: boolean }) {
+function Unrecorded({ field, inline = false, label = "non relevé" }: { field: string; inline?: boolean; label?: string }) {
   if (inline)
     return (
       <span className="flex items-center gap-3">
@@ -167,7 +184,7 @@ function Unrecorded({ field, inline = false }: { field: string; inline?: boolean
     );
   return (
     <div className="hatch flex min-h-[64px] items-end justify-between gap-4 border border-ink/25 px-3 py-2">
-      <span className="t-serif bg-paper px-1 text-[17px] text-graphite">non relevé</span>
+      <span className="t-serif bg-paper px-1 text-[17px] text-graphite">{label}</span>
       <code className="t-mono bg-paper px-1 normal-case tracking-normal text-graphite/80">projects.ts → {field}</code>
     </div>
   );

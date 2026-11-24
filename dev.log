@@ -1,0 +1,418 @@
+▲ Next.js 16.4.6 (Turbopack)
+- Local:         http://localhost:3100
+- Network:       http://192.0.2.2:3100
+✓ Ready in 1866ms
+✓ Running next.config.ts took 4.1s
+
+○ Compiling / ...
+ GET /?scene=2.45 200 in 984ms (next.js: 809ms, application-code: 175ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[browser] THREE.WebGLProgram: Shader Error 0 - VALIDATE_STATUS false
+
+Material Name: 
+Material Type: ShaderMaterial
+
+Program Info Log: Fragment shader is not compiled.
+
+FRAGMENT
+
+ERROR: 0:350: 'active' : Illegal use of reserved word
+ERROR: 0:350: 'active' : syntax error
+
+  345:     metal = mix(metal, metal * vec3(1.05, 0.9, 0.85), lens * 0.4);
+  346:     col = mix(col, metal, liq);
+  347:   }
+  348: 
+  349:   // la ligne de front : le géomètre redessine la carte
+> 350:   float active = step(0.005, uMix) * step(uMix, 0.995);
+  351:   float fw = max(fwidth(sw), 1e-4);
+  352:   float front = 1.0 - smoothstep(fw * 0.8, fw * 2.2, abs(sw - 0.5));
+  353:   float erase = exp(-pow((sw - 0.5) / 0.22, 2.0));
+  354:   col = mix(col, paper * 1.04, erase * 0.35 * active * (1.0 - liq));
+  355:   col = mix(col, RED, front * active * 0.9);
+  356:  
+ GET /?scene=3.5 200 in 36ms (next.js: 1.1ms, application-code: 35ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[browser] THREE.WebGLProgram: Shader Error 0 - VALIDATE_STATUS false
+
+Material Name: 
+Material Type: ShaderMaterial
+
+Program Info Log: Fragment shader is not compiled.
+
+FRAGMENT
+
+ERROR: 0:350: 'active' : Illegal use of reserved word
+ERROR: 0:350: 'active' : syntax error
+
+  345:     metal = mix(metal, metal * vec3(1.05, 0.9, 0.85), lens * 0.4);
+  346:     col = mix(col, metal, liq);
+  347:   }
+  348: 
+  349:   // la ligne de front : le géomètre redessine la carte
+> 350:   float active = step(0.005, uMix) * step(uMix, 0.995);
+  351:   float fw = max(fwidth(sw), 1e-4);
+  352:   float front = 1.0 - smoothstep(fw * 0.8, fw * 2.2, abs(sw - 0.5));
+  353:   float erase = exp(-pow((sw - 0.5) / 0.22, 2.0));
+  354:   col = mix(col, paper * 1.04, erase * 0.35 * active * (1.0 - liq));
+  355:   col = mix(col, RED, front * active * 0.9);
+  356:  
+ GET /?scene=4.55 200 in 42ms (next.js: 1.2ms, application-code: 40ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[browser] THREE.WebGLProgram: Shader Error 0 - VALIDATE_STATUS false
+
+Material Name: 
+Material Type: ShaderMaterial
+
+Program Info Log: Fragment shader is not compiled.
+
+FRAGMENT
+
+ERROR: 0:350: 'active' : Illegal use of reserved word
+ERROR: 0:350: 'active' : syntax error
+
+  345:     metal = mix(metal, metal * vec3(1.05, 0.9, 0.85), lens * 0.4);
+  346:     col = mix(col, metal, liq);
+  347:   }
+  348: 
+  349:   // la ligne de front : le géomètre redessine la carte
+> 350:   float active = step(0.005, uMix) * step(uMix, 0.995);
+  351:   float fw = max(fwidth(sw), 1e-4);
+  352:   float front = 1.0 - smoothstep(fw * 0.8, fw * 2.2, abs(sw - 0.5));
+  353:   float erase = exp(-pow((sw - 0.5) / 0.22, 2.0));
+  354:   col = mix(col, paper * 1.04, erase * 0.35 * active * (1.0 - liq));
+  355:   col = mix(col, RED, front * active * 0.9);
+  356:  
+ GET /?scene=2.45 200 in 40ms (next.js: 1.1ms, application-code: 39ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[browser] THREE.WebGLProgram: Shader Error 0 - VALIDATE_STATUS false
+
+Material Name: 
+Material Type: ShaderMaterial
+
+Program Info Log: Fragment shader is not compiled.
+
+FRAGMENT
+
+ERROR: 0:350: 'active' : Illegal use of reserved word
+ERROR: 0:350: 'active' : syntax error
+
+  345:     metal = mix(metal, metal * vec3(1.05, 0.9, 0.85), lens * 0.4);
+  346:     col = mix(col, metal, liq);
+  347:   }
+  348: 
+  349:   // la ligne de front : le géomètre redessine la carte
+> 350:   float active = step(0.005, uMix) * step(uMix, 0.995);
+  351:   float fw = max(fwidth(sw), 1e-4);
+  352:   float front = 1.0 - smoothstep(fw * 0.8, fw * 2.2, abs(sw - 0.5));
+  353:   float erase = exp(-pow((sw - 0.5) / 0.22, 2.0));
+  354:   col = mix(col, paper * 1.04, erase * 0.35 * active * (1.0 - liq));
+  355:   col = mix(col, RED, front * active * 0.9);
+  356:  
+ GET /?scene=2.45 200 in 33ms (next.js: 1.2ms, application-code: 31ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+ GET /?scene=3.5 200 in 37ms (next.js: 0.9ms, application-code: 36ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+ GET /?scene=4.55 200 in 31ms (next.js: 1.1ms, application-code: 30ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+ GET /releves/cyber-01 200 in 301ms (next.js: 8ms, generate-params: 251ms, application-code: 43ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HTTPAccessFallbackErrorBoundary pathname="/releves/c..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
+      <RedirectBoundary>
+        <RedirectErrorBoundary router={{...}}>
+          <Head>
+          <__next_root_layout_boundary__>
+            <SegmentViewNode type="layout" pagePath="layout.tsx">
+              <SegmentTrieNode>
+              <link>
+              <script>
+              <script>
+              <script>
+              <RootLayout>
+                <html lang="fr">
+                  <body>
+                    <a>
+                    <Stage>
+                      <LoadableComponent>
+                      <Markers>
+                        <div aria-label="Bornes du ..." role="navigation">
+                          <Marker r={{slug:"soft...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/s..." data-slug="software-01" ...>
+                              <a data-slug="software-01" data-ui={true} inert={true} aria-label="Relevé 01...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"soft...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/s..." data-slug="software-02" ...>
+                              <a data-slug="software-02" data-ui={true} inert={true} aria-label="Relevé 01...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"soft...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/s..." data-slug="software-03" ...>
+                              <a data-slug="software-03" data-ui={true} inert={true} aria-label="Relevé 01...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"cybe...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/c..." data-slug="cyber-01" data-ui={true} ...>
+                              <a data-slug="cyber-01" data-ui={true} inert={true} aria-label="Relevé 02...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"cybe...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/c..." data-slug="cyber-02" data-ui={true} ...>
+                              <a data-slug="cyber-02" data-ui={true} inert={true} aria-label="Relevé 02...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"cybe...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/c..." data-slug="cyber-03" data-ui={true} ...>
+                              <a data-slug="cyber-03" data-ui={true} inert={true} aria-label="Relevé 02...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"clou...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/c..." data-slug="cloud-01" data-ui={true} ...>
+                              <a data-slug="cloud-01" data-ui={true} inert={true} aria-label="Relevé 03...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"clou...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/c..." data-slug="cloud-02" data-ui={true} ...>
+                              <a data-slug="cloud-02" data-ui={true} inert={true} aria-label="Relevé 03...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"clou...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/c..." data-slug="cloud-03" data-ui={true} ...>
+                              <a data-slug="cloud-03" data-ui={true} inert={true} aria-label="Relevé 03...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"lab-01", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/l..." data-slug="lab-01" data-ui={true} ...>
+                              <a data-slug="lab-01" data-ui={true} inert={true} aria-label="Relevé 04...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"lab-02", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/l..." data-slug="lab-02" data-ui={true} ...>
+                              <a data-slug="lab-02" data-ui={true} inert={true} aria-label="Relevé 04...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                      ...
+                    ...
+          ...
+ 
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+✓ Compiled in 63ms
+ GET /releves/cyber-01 200 in 43ms (next.js: 1.4ms, generate-params: 8ms, application-code: 34ms)
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HTTPAccessFallbackErrorBoundary pathname="/releves/c..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
+      <RedirectBoundary>
+        <RedirectErrorBoundary router={{...}}>
+          <Head>
+          <__next_root_layout_boundary__>
+            <SegmentViewNode type="layout" pagePath="layout.tsx">
+              <SegmentTrieNode>
+              <link>
+              <script>
+              <script>
+              <script>
+              <RootLayout>
+                <html lang="fr">
+                  <body>
+                    <a>
+                    <Stage>
+                      <LoadableComponent>
+                      <Markers>
+                        <div aria-label="Bornes du ..." role="navigation">
+                          <Marker r={{slug:"soft...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/s..." data-slug="software-01" ...>
+                              <a data-slug="software-01" data-ui={true} inert={true} aria-label="Relevé 01...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"soft...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/s..." data-slug="software-02" ...>
+                              <a data-slug="software-02" data-ui={true} inert={true} aria-label="Relevé 01...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"soft...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/s..." data-slug="software-03" ...>
+                              <a data-slug="software-03" data-ui={true} inert={true} aria-label="Relevé 01...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"cybe...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/c..." data-slug="cyber-01" data-ui={true} ...>
+                              <a data-slug="cyber-01" data-ui={true} inert={true} aria-label="Relevé 02...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"cybe...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/c..." data-slug="cyber-02" data-ui={true} ...>
+                              <a data-slug="cyber-02" data-ui={true} inert={true} aria-label="Relevé 02...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"cybe...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/c..." data-slug="cyber-03" data-ui={true} ...>
+                              <a data-slug="cyber-03" data-ui={true} inert={true} aria-label="Relevé 02...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"clou...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/c..." data-slug="cloud-01" data-ui={true} ...>
+                              <a data-slug="cloud-01" data-ui={true} inert={true} aria-label="Relevé 03...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"clou...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/c..." data-slug="cloud-02" data-ui={true} ...>
+                              <a data-slug="cloud-02" data-ui={true} inert={true} aria-label="Relevé 03...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"clou...", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/c..." data-slug="cloud-03" data-ui={true} ...>
+                              <a data-slug="cloud-03" data-ui={true} inert={true} aria-label="Relevé 03...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"lab-01", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/l..." data-slug="lab-01" data-ui={true} ...>
+                              <a data-slug="lab-01" data-ui={true} inert={true} aria-label="Relevé 04...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                          <Marker r={{slug:"lab-02", ...}}>
+                            <LinkComponent ref={{current:null}} href="/releves/l..." data-slug="lab-02" data-ui={true} ...>
+                              <a data-slug="lab-02" data-ui={true} inert={true} aria-label="Relevé 04...." ...>
+                                <span>
+                                <span>
+                                <span
++                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb..."
+-                                 className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform ..."
+                                >
+                      ...
+                    ...
+          ...
+ 
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+ GET / 200 in 44ms (next.js: 1.3ms, application-code: 43ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+ GET /releves/cyber-01 200 in 53ms (next.js: 2ms, generate-params: 12ms, application-code: 39ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+ GET / 200 in 41ms (next.js: 0.9ms, application-code: 40ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+✓ Compiled in 30ms
+ GET /releves/cyber-01 200 in 58ms (next.js: 1.0ms, generate-params: 25ms, application-code: 32ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+✓ Compiled in 29ms
+ GET /?scene=6.85 200 in 38ms (next.js: 1.3ms, application-code: 37ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+ GET /?scene=6.5 200 in 40ms (next.js: 1.2ms, application-code: 39ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+ GET /?scene=7 200 in 30ms (next.js: 0.9ms, application-code: 29ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+ GET /?scene=7 200 in 37ms (next.js: 0.8ms, application-code: 36ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+✓ Compiled in 148ms
+ GET /?scene=5 200 in 34ms (next.js: 4ms, application-code: 30ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+ GET /?scene=5 200 in 31ms (next.js: 0.7ms, application-code: 30ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+ GET / 200 in 31ms (next.js: 0.8ms, application-code: 31ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+ GET /releves/cyber-01 200 in 66ms (next.js: 10ms, generate-params: 12ms, application-code: 44ms)

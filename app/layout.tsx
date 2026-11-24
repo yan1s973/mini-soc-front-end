@@ -7,10 +7,14 @@ import "@fontsource/ibm-plex-mono/500.css";
 import "./globals.css";
 import { Stage } from "@/components/ui/Stage";
 
+const description =
+  "Portfolio de Yanis, ingénieur logiciel : software engineering, cybersécurité, cloud & infrastructure. Un territoire à relever.";
+
 export const metadata: Metadata = {
   title: "YANIS — Relevé",
-  description:
-    "Portfolio de Yanis, ingénieur logiciel : software engineering, cybersécurité, cloud & infrastructure. Un territoire à relever.",
+  description,
+  openGraph: { title: "YANIS — Relevé", description, type: "website", locale: "fr_FR" },
+  twitter: { card: "summary", title: "YANIS — Relevé", description },
 };
 
 export const viewport: Viewport = {

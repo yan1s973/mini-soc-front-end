@@ -9,6 +9,16 @@ import type { DisciplineId } from "./disciplines";
  * La borne apparaît automatiquement sur le terrain du chapitre, la fiche
  * `/releves/[slug]` est générée statiquement.
  */
+/**
+ * Schéma d'architecture. Grille : x 0-12, y 0-8 (centre des nœuds).
+ * kind : "service" (défaut), "store" (base, file, bucket), "external"
+ * (tiers, hors périmètre), "edge" (point d'entrée : passerelle, CDN…).
+ */
+export interface Diagram {
+  nodes: { id: string; label: string; x: number; y: number; kind?: "service" | "store" | "external" | "edge" }[];
+  edges: { from: string; to: string; label?: string; async?: boolean }[];
+}
+
 export interface Releve {
   slug: string;
   discipline: DisciplineId;
@@ -24,6 +34,7 @@ export interface Releve {
   solution: string | null;
   /** description textuelle ; un schéma pourra être ajouté plus tard */
   architecture: string | null;
+  diagram: Diagram | null;
   stack: string[] | null;
   decisions: string[] | null;
   challenges: string[] | null;
@@ -44,6 +55,7 @@ const empty = (slug: string, discipline: DisciplineId): Releve => ({
   concept: null,
   solution: null,
   architecture: null,
+  diagram: null,
   stack: null,
   decisions: null,
   challenges: null,

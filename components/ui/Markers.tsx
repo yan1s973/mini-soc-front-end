@@ -59,7 +59,7 @@ function Marker({ r }: { r: Releve }) {
         </svg>
       </span>
       <span className="absolute bottom-[10px] left-0 h-[46px] w-px origin-bottom bg-ink transition-all duration-500 ease-[var(--ease-pen)] group-hover:h-[64px] group-hover:bg-red" />
-      <span className="absolute bottom-[56px] left-[6px] whitespace-nowrap transition-transform duration-500 ease-[var(--ease-pen)] group-hover:-translate-y-[18px]">
+      <span className="absolute bottom-[56px] left-[6px] whitespace-nowrap bg-[color-mix(in_srgb,var(--paper-live)_78%,transparent)] px-[5px] py-[2px] shadow-[inset_1px_0_0_var(--color-ink)] transition-transform duration-500 ease-[var(--ease-pen)] group-hover:-translate-y-[18px] group-hover:shadow-[inset_1px_0_0_var(--color-red)]">
         <span className="t-mono block text-ink group-hover:text-red">R {code}</span>
         <span className="t-serif block text-[15px] leading-tight text-ink/80">{r.title ?? "non relevé"}</span>
       </span>
