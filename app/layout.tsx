@@ -5,7 +5,6 @@ import "@fontsource/instrument-serif/400.css";
 import "@fontsource/ibm-plex-mono/400.css";
 import "@fontsource/ibm-plex-mono/500.css";
 import "./globals.css";
-import { Stage } from "@/components/ui/Stage";
 
 const description =
   "Portfolio de Yanis, ingénieur logiciel : software engineering, cybersécurité, cloud & infrastructure. Un territoire à relever.";
@@ -33,7 +32,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Aller au contenu
         </a>
-        <Stage />
         {children}
       </body>
     </html>
