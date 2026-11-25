@@ -5,7 +5,7 @@
  */
 
 /** mots imprimés sur le mur du studio, révélés à travers le verre */
-export const WORDS = ["YANIS", "SOFTWARE", "SECURITY", "CLOUD", "EXPERIMENTS"] as const;
+export const WORDS = ["YANIS", "PROJETS", "CERTIFIÉ", "PARCOURS", "SIGNAUX"] as const;
 
 export interface NScene {
   id: string;
@@ -22,12 +22,12 @@ export interface NScene {
 
 export const NSCENES: NScene[] = [
   { id: "hero", state: 0, invert: 0, shift: [0, 0.04], zoom: 1.14, word: 0 },
-  { id: "manifeste", state: 0, invert: 0, shift: [0.42, 0], zoom: 1.25, word: 0 },
-  { id: "software", state: 1, invert: 0, shift: [0.38, 0], zoom: 1.05, word: 1 },
-  { id: "cyber", state: 2, invert: 1, shift: [-0.38, 0], zoom: 1.05, word: 2 },
-  { id: "cloud", state: 3, invert: 0, shift: [0.38, 0], zoom: 1.1, word: 3 },
-  { id: "lab", state: 4, invert: 1, shift: [-0.38, 0], zoom: 1.05, word: 4 },
-  { id: "about", state: 0, invert: 0, shift: [0.4, 0], zoom: 1.2, word: 0 },
+  { id: "profil", state: 0, invert: 0, shift: [0.42, 0], zoom: 1.25, word: 0 },
+  // les vignettes sont les vedettes : le noyau recule, tout en haut, dans le noir
+  { id: "projets", state: 1, invert: 1, shift: [0.34, 0.3], zoom: 2.9, word: 1 },
+  { id: "certifications", state: 1, invert: 0, shift: [0.38, 0], zoom: 1.05, word: 2 },
+  { id: "experiences", state: 3, invert: 0, shift: [0.4, 0], zoom: 1.15, word: 3 },
+  { id: "autres", state: 4, invert: 1, shift: [-0.6, 0.04], zoom: 1.55, word: 4 },
   { id: "contact", state: 0, invert: 1, shift: [0, 0.18], zoom: 1.9, word: 0 },
 ];
 
@@ -45,6 +45,8 @@ export const nlive = {
   /** inversion affichée (amortie) — lue par le DOM pour ses couleurs */
   invert: 0,
   ready: false,
+  /** page qui a sa propre scène 3D : le noyau se met en veille */
+  suspend: false,
   /** progression du chargement (0-1) */
   progress: 0,
 };

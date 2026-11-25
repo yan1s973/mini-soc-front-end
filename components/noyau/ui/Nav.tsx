@@ -8,12 +8,11 @@ import { wipeTo } from "./Transition";
 
 const LABELS: Record<string, string> = {
   hero: "Index",
-  manifeste: "Manifeste",
-  software: "01 — Software",
-  cyber: "02 — Security",
-  cloud: "03 — Cloud",
-  lab: "04 — Experiments",
-  about: "05 — About",
+  profil: "01 — Profil",
+  projets: "02 — Projets",
+  certifications: "03 — Certifications",
+  experiences: "04 — Expériences",
+  autres: "05 — Autres",
   contact: "Contact",
 };
 
@@ -31,7 +30,7 @@ export function Nav() {
     let last = "";
     const tick = () => {
       const id = NSCENES[Math.min(NSCENES.length - 1, Math.max(0, Math.round(nlive.target)))].id;
-      const text = home ? LABELS[id] : "Fiche projet";
+      const text = home ? LABELS[id] : pathname.startsWith("/certifications") ? "03 — Certifications" : "Fiche projet";
       if (text !== last && where.current) {
         last = text;
         where.current.textContent = text;
@@ -40,7 +39,7 @@ export function Nav() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [home]);
+  }, [home, pathname]);
 
   const go = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -58,11 +57,19 @@ export function Nav() {
       </span>
       <nav aria-label="Principal" className="t-mono flex gap-5">
         {[
-          ["software", "Travail"],
-          ["about", "À propos"],
+          ["profil", "Profil"],
+          ["projets", "Projets"],
+          ["certifications", "Certifs"],
+          ["experiences", "Parcours"],
           ["contact", "Contact"],
-        ].map(([id, label]) => (
-          <a key={id} href={`/#${id}`} onClick={go(id)} data-scramble-root className="hover:opacity-60">
+        ].map(([id, label], k) => (
+          <a
+            key={id}
+            href={`/#${id}`}
+            onClick={go(id)}
+            data-scramble-root
+            className={`hover:opacity-60 ${k > 0 && k < 4 ? "hidden sm:inline" : ""}`}
+          >
             <Scramble text={label} />
           </a>
         ))}

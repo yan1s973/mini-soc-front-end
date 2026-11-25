@@ -108,7 +108,8 @@ float coreD(vec3 p) {
     float oc = sdOcta(q, 0.4);
     vec3 qc = rotY(0.785) * rotX(0.615) * q;
     float cube = sdRoundBox(qc, vec3(0.21), 0.005);
-    m = mix(m, min(oc, cube), uW[1]);
+    // cristal maclé, mais encore un peu liquide : pas d'aplats « découpés »
+    m = mix(m, smin(oc, cube, 0.05), uW[1] * 0.78);
   }
   if (uW[3] > 0.001) {
     float s = 1e5;

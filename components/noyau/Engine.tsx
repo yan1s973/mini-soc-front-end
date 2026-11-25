@@ -153,6 +153,18 @@ export function Engine() {
     function frame(now: number) {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
+      // veille : une autre scène occupe la page (certifications)
+      cv.style.visibility = nlive.suspend ? "hidden" : "visible";
+      if (nlive.suspend) {
+        lastCss = -1; // au réveil, l'interface reprendra les couleurs du studio
+        if (!nlive.ready) {
+          nlive.ready = true;
+          nlive.progress = 1;
+          setShown(true);
+        }
+        raf = requestAnimationFrame(frame);
+        return;
+      }
       time += reduced ? dt * 0.3 : dt;
 
       ptr.x = damp(ptr.x, ptr.tx, 6, dt);

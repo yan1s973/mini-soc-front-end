@@ -11,6 +11,18 @@ Deux expériences dans ce dépôt :
   niveau). Direction de création : [`docs/DIRECTION.md`](docs/DIRECTION.md).
 
 Les deux partagent le même contenu (`content/projects.ts`, `content/profile.ts`).
+
+### Remplir le portfolio NOYAU
+
+| Partie | Fichier | Ce qu'on y met |
+|---|---|---|
+| 01 Profil | `content/profile.ts`, `content/noyau.ts` | bio, localisation, contacts ; texte du manifeste |
+| 02 Projets | `content/projects.ts` | `featured: true` (4 max) ; `thumbnail: "/projets/xxx.jpg"` (image dans `public/projets/`) |
+| 03 Certifications | `content/certifications.ts` | nom, organisme, date, lien ; `image: "/certifications/xxx.png"` → devient la face de la carte 3D |
+| 04 Expériences | `content/experiences.ts` | période, poste, entreprise, lieu, description, points |
+| 05 Autres | `content/extras.ts` | chiffres vérifiables (compteurs animés) et listes |
+
+Tout champ `null` s'affiche comme placeholder : rien n'est inventé.
 `?hq` fige la pleine résolution (captures).
 
 ## Lancer

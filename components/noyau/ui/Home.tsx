@@ -2,11 +2,16 @@
 
 import Lenis from "lenis";
 import { useEffect, useRef } from "react";
+import { CERTIFICATIONS } from "@/content/certifications";
+import { EXPERIENCES } from "@/content/experiences";
+import { EXTRAS } from "@/content/extras";
 import { CHAPTERS, MANIFESTE } from "@/content/noyau";
 import { PROFILE } from "@/content/profile";
-import { codeOf, relevesOf } from "@/content/projects";
+import { codeOf, featured } from "@/content/projects";
 import { NSCENES, nlive } from "@/lib/noyau";
 import { Marquee } from "./Marquee";
+import { MediaSlot } from "./Media";
+import { Roll } from "./Roll";
 import { Scramble } from "./Scramble";
 import { wipeTo } from "./Transition";
 
@@ -54,7 +59,7 @@ export function NoyauHome() {
       document.documentElement.style.setProperty("--skew", String(Math.max(-6, Math.min(6, l.velocity * 0.12))));
     });
 
-    const holds: Record<string, number> = { hero: 0, manifeste: 0.3, contact: 0 };
+    const holds: Record<string, number> = { hero: 0, profil: 0.3, projets: 0.8, experiences: 0.7, contact: 0 };
     const update = () => {
       const y = window.scrollY;
       let s = 0;
@@ -88,10 +93,26 @@ export function NoyauHome() {
 
     // titres : on déclenche la cascade quand ils entrent à l'écran
     const io = new IntersectionObserver(
-      (es) => es.forEach((e) => e.isIntersecting && e.target.setAttribute("data-in", "")),
+      (es) =>
+        es.forEach((e) => {
+          if (!e.isIntersecting || e.target.hasAttribute("data-in")) return;
+          e.target.setAttribute("data-in", "");
+          // compteurs : de 0 à la valeur, une seule fois
+          const el = e.target as HTMLElement;
+          const v = Number(el.dataset.value);
+          if (el.classList.contains("count") && el.dataset.value && Number.isFinite(v)) {
+            const t0 = performance.now();
+            const tick = (now: number) => {
+              const k = Math.min(1, (now - t0) / 1600);
+              el.textContent = Math.round(v * (1 - Math.pow(1 - k, 4))).toLocaleString("fr-FR");
+              if (k < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+          }
+        }),
       { threshold: 0.25 },
     );
-    document.querySelectorAll(".split, .rise").forEach((el) => io.observe(el));
+    document.querySelectorAll(".split, .rise, .count").forEach((el) => io.observe(el));
 
     const hash = location.hash.slice(1);
     if (returnY > 0) {
@@ -143,104 +164,217 @@ export function NoyauHome() {
         </div>
       </section>
 
-      {/* ------------------------------------------------ manifeste */}
-      <section ref={reg(1)} id="manifeste" className="relative min-h-[170svh]">
+      {/* ------------------------------------------------ 01 profil */}
+      <section ref={reg(1)} id="profil" className="relative min-h-[200svh]">
         <div className="sticky top-0 flex h-svh items-center px-[var(--gutter)]">
           <div ref={manif} className="max-w-[min(56rem,58vw)] max-md:max-w-none" style={{ ["--n" as string]: words.length }}>
-            <p className="t-mono mb-8 opacity-60">Manifeste</p>
+            <p className="t-mono mb-8 flex gap-6 opacity-60">
+              <span>01 — Profil</span>
+              <span>{PROFILE.role}</span>
+            </p>
             <p className="text-[clamp(30px,4.4vw,76px)] font-[300] leading-[1.04] tracking-[-0.015em]">
               {words.map((w, i) => (
-                <span
-                  key={i}
-                  className="manif-w"
-                  style={{ ["--i" as string]: i }}
-                >
+                <span key={i} className="manif-w" style={{ ["--i" as string]: i }}>
                   {w}{" "}
                 </span>
               ))}
             </p>
+            <div className="mt-10 grid max-w-[44rem] grid-cols-1 gap-6 border-t border-[color-mix(in_srgb,var(--fg)_30%,transparent)] pt-6 sm:grid-cols-2">
+              {PROFILE.bio ? (
+                <p className="text-[16px] leading-[1.65] opacity-85">{PROFILE.bio}</p>
+              ) : (
+                <p className="placeholder self-start">Présentation à venir</p>
+              )}
+              <ul className="t-mono flex flex-col gap-2">
+                {PROFILE.domains.map((d) => (
+                  <li key={d} className="flex justify-between border-b border-[color-mix(in_srgb,var(--fg)_20%,transparent)] pb-2">
+                    <span>{d}</span>
+                    <span className="opacity-50">●</span>
+                  </li>
+                ))}
+                <li className="flex justify-between opacity-60">
+                  <span>Localisation</span>
+                  <span>{PROFILE.location ?? "—"}</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
       <Marquee items={["Software Engineering", "Cybersecurity", "Cloud & Infrastructure", "Experiments"]} />
 
-      {/* ------------------------------------------------ chapitres */}
-      {CHAPTERS.map((c, k) => {
-        const right = k % 2 === 1; // l'objet passe à gauche, le texte à droite
-        const list = relevesOf(c.id);
-        return (
-          <section ref={reg(k + 2)} id={c.id} key={c.id} className="relative min-h-[190svh]">
-            <div className={`sticky top-0 flex min-h-svh flex-col justify-end px-[var(--gutter)] pb-10 pt-28 md:justify-center md:py-28 ${right ? "md:items-end" : ""}`}>
-              <div className={`w-full max-w-[40rem] ${right ? "md:text-right" : ""}`}>
-                <div className={`flex items-baseline gap-5 ${right ? "md:flex-row-reverse" : ""}`}>
-                  <span className="outline-num text-[clamp(90px,15vw,240px)]">{c.n}</span>
-                  <span className="t-mono opacity-60">{c.verb}</span>
+      {/* ------------------------------------------------ 02 projets */}
+      <section ref={reg(2)} id="projets" className="relative px-[var(--gutter)] pb-[30svh] pt-[22svh]">
+        <header className="mb-[10svh] flex items-start justify-between gap-6">
+          <h2 className="skewy text-[clamp(56px,12.5vw,230px)] font-[300] uppercase leading-[0.82] tracking-[-0.03em] [font-stretch:125%]">
+            <Split text="Projets" />
+          </h2>
+          <div className="t-mono flex flex-col items-end gap-3 pt-3 text-right">
+            <span className="outline-num text-[clamp(40px,5vw,84px)]">{String(featured().length).padStart(2, "0")}</span>
+            <span className="opacity-60">02 — Sélection</span>
+            <span className="arrow-loop text-[28px] leading-none">↘</span>
+          </div>
+        </header>
+        <div className="grid grid-cols-1 gap-x-[3vw] gap-y-[12svh] md:grid-cols-2">
+          {featured().map((r, k) => {
+            const ch = CHAPTERS.find((c) => c.id === r.discipline)!;
+            return (
+              <a
+                key={r.slug}
+                href={`/projets/${r.slug}`}
+                data-cursor="Ouvrir"
+                onMouseEnter={() => (nlive.pulse = Math.max(nlive.pulse, 0.5))}
+                onClick={(e) => {
+                  e.preventDefault();
+                  wipeTo(`/projets/${r.slug}`, e);
+                }}
+                className={`media-root roll-root group block ${k % 2 === 1 ? "md:mt-[18svh]" : ""}`}
+              >
+                <MediaSlot src={r.thumbnail} label={r.title ?? "Projet à venir"} code={codeOf(r)} className="aspect-[16/10] w-full" />
+                <div className="mt-5 flex items-start justify-between gap-6">
+                  <div>
+                    <p className="t-mono opacity-60">{ch.title} • {r.year ?? "—"}</p>
+                    <p className="mt-2 text-[clamp(24px,2.6vw,44px)] uppercase leading-none tracking-[-0.01em] [font-stretch:120%]">
+                      <Roll text={r.title ?? "Projet à venir"} />
+                    </p>
+                  </div>
+                  <span className="t-mono mt-1 shrink-0 transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1">
+                    {codeOf(r)} ↗
+                  </span>
                 </div>
-                <h2 className="skewy mt-2 text-[clamp(28px,4.1vw,72px)] font-[300] uppercase leading-[0.95] tracking-[-0.015em] [font-stretch:125%]">
-                  <Split text={c.title} />
-                </h2>
-                <p className="t-serif mt-6 max-w-[34ch] text-[clamp(20px,1.8vw,28px)] leading-[1.2] opacity-85 md:inline-block">
-                  {c.lede}
-                </p>
+              </a>
+            );
+          })}
+        </div>
+      </section>
 
-                <ul className="mt-12 border-t border-[color-mix(in_srgb,var(--fg)_35%,transparent)] text-left">
-                  {list.map((r) => (
-                    <li key={r.slug}>
-                      <a
-                        href={`/projets/${r.slug}`}
-                        data-cursor="Ouvrir"
-                        data-scramble-root
-                        onMouseEnter={() => (nlive.pulse = Math.max(nlive.pulse, 0.55))}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          wipeTo(`/projets/${r.slug}`, e);
-                        }}
-                        className="row group relative grid grid-cols-[4.5rem_1fr_auto] items-center gap-4 border-b border-[color-mix(in_srgb,var(--fg)_35%,transparent)] py-5"
-                      >
-                        <span className="row-fill" aria-hidden="true" />
-                        <span className="t-mono relative">{codeOf(r)}</span>
-                        <span className="relative text-[clamp(18px,1.6vw,24px)] font-[400] uppercase tracking-[0.04em] [font-stretch:115%]">
-                          <Scramble text={r.title ?? "Projet à venir"} />
-                        </span>
-                        <span className="t-mono relative transition-transform duration-500 group-hover:translate-x-1">
-                          {r.year ?? "—"} ↗
-                        </span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </section>
-        );
-      })}
-
-      {/* ------------------------------------------------ about */}
-      <section ref={reg(6)} id="about" className="relative min-h-[170svh]">
-        <div className="sticky top-0 flex min-h-svh flex-col justify-end px-[var(--gutter)] pb-10 pt-28 md:justify-center md:py-28">
+      {/* ------------------------------------------------ 03 certifications */}
+      <section ref={reg(3)} id="certifications" className="relative min-h-[170svh]">
+        <div className="sticky top-0 flex min-h-svh flex-col justify-end px-[var(--gutter)] pb-10 pt-28 md:justify-center">
           <div className="max-w-[40rem]">
             <div className="flex items-baseline gap-5">
-              <span className="outline-num text-[clamp(90px,15vw,240px)]">05</span>
-              <span className="t-mono opacity-60">À propos</span>
+              <span className="outline-num text-[clamp(90px,15vw,240px)]">03</span>
+              <span className="t-mono opacity-60">{String(CERTIFICATIONS.length).padStart(2, "0")} documents</span>
             </div>
             <h2 className="skewy mt-2 text-[clamp(28px,4.1vw,72px)] font-[300] uppercase leading-[0.95] tracking-[-0.015em] [font-stretch:125%]">
-              <Split text="Yanis" />
+              <Split text="Certifications" />
             </h2>
-            <p className="t-serif mt-6 text-[clamp(22px,2vw,30px)] leading-[1.2]">
-              {PROFILE.role} — {PROFILE.domains.join(", ")}.
+            <p className="t-serif mt-6 max-w-[34ch] text-[clamp(20px,1.8vw,28px)] leading-[1.2] opacity-85">
+              Chaque certificat devient un objet : on le prend en main, on le retourne.
             </p>
-            {PROFILE.bio ? (
-              <p className="mt-5 max-w-[46ch] text-[16px] leading-[1.65] opacity-85">{PROFILE.bio}</p>
-            ) : (
-              <p className="placeholder mt-6">Présentation à venir</p>
-            )}
+            <ul className="mt-10 border-t border-[color-mix(in_srgb,var(--fg)_35%,transparent)]">
+              {CERTIFICATIONS.slice(0, 3).map((c, i) => (
+                <li key={c.slug} className="t-mono flex justify-between border-b border-[color-mix(in_srgb,var(--fg)_35%,transparent)] py-3">
+                  <span>{String(i + 1).padStart(2, "0")} — {c.name ?? "À renseigner"}</span>
+                  <span className="opacity-60">{c.issuer ?? "—"}</span>
+                </li>
+              ))}
+            </ul>
+            <a
+              href="/certifications"
+              data-cursor="Manipuler"
+              data-scramble-root
+              onClick={(e) => {
+                e.preventDefault();
+                wipeTo("/certifications", e);
+              }}
+              className="btn-fill mt-10 inline-flex items-center gap-4 rounded-full border border-current px-6 py-4 t-mono"
+            >
+              <Scramble text="Manipuler les certificats" />
+              <span>→</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------ 04 expériences */}
+      <section ref={reg(4)} id="experiences" className="relative px-[var(--gutter)] py-[24svh]">
+        <div className="max-w-[min(62rem,60vw)] max-md:max-w-none">
+          <div className="flex items-baseline gap-5">
+            <span className="outline-num text-[clamp(90px,15vw,240px)]">04</span>
+            <span className="t-mono opacity-60">Parcours</span>
+          </div>
+          <h2 className="skewy mt-2 text-[clamp(28px,4.1vw,72px)] font-[300] uppercase leading-[0.95] tracking-[-0.015em] [font-stretch:125%]">
+            <Split text="Expériences" />
+          </h2>
+          <ol className="mt-14 border-t border-[color-mix(in_srgb,var(--fg)_35%,transparent)]">
+            {EXPERIENCES.map((x, i) => (
+              <li key={i} className="border-b border-[color-mix(in_srgb,var(--fg)_35%,transparent)]">
+                <details className="xp roll-root group">
+                  <summary className="grid cursor-none list-none grid-cols-[7rem_1fr_auto] items-baseline gap-4 py-7 max-sm:grid-cols-[1fr_auto]">
+                    <span className="t-mono opacity-60 max-sm:col-span-2">{x.period ?? "Période —"}</span>
+                    <span className="text-[clamp(20px,2.2vw,34px)] uppercase leading-none [font-stretch:115%]">
+                      <Roll text={x.role ?? "Poste à renseigner"} />
+                      <span className="t-mono mt-2 block normal-case opacity-60">
+                        {x.company ?? "Entreprise —"} · {x.location ?? "Lieu —"}
+                      </span>
+                    </span>
+                    <span className="xp-plus t-mono text-[22px]">+</span>
+                  </summary>
+                  <div className="pb-8 pl-0 sm:pl-[8rem]">
+                    {x.summary ? (
+                      <p className="max-w-[60ch] text-[16px] leading-[1.65] opacity-85">{x.summary}</p>
+                    ) : (
+                      <p className="placeholder">Description à venir</p>
+                    )}
+                    {x.points && (
+                      <ul className="mt-4 flex flex-col gap-2 text-[15px] opacity-85">
+                        {x.points.map((pt, k) => (
+                          <li key={k}>— {pt}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </details>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------ 05 autres */}
+      <section ref={reg(5)} id="autres" className="relative px-[var(--gutter)] py-[24svh]">
+        <div className="md:ml-auto md:max-w-[min(56rem,50vw)]">
+          <div className="flex items-baseline gap-5 md:flex-row-reverse">
+            <span className="outline-num text-[clamp(90px,15vw,240px)]">05</span>
+            <span className="t-mono opacity-60">Signaux</span>
+          </div>
+          <h2 className="skewy mt-2 text-[clamp(28px,4.1vw,72px)] font-[300] uppercase leading-[0.95] tracking-[-0.015em] [font-stretch:125%] md:text-right">
+            <Split text="Autres" />
+          </h2>
+          <div className="mt-14 grid grid-cols-1 border-l border-t border-[color-mix(in_srgb,var(--fg)_35%,transparent)] sm:grid-cols-2">
+            {EXTRAS.map((x) => (
+              <div key={x.title} className="flex min-h-[18rem] flex-col justify-between border-b border-r border-[color-mix(in_srgb,var(--fg)_35%,transparent)] p-6">
+                <p className="t-mono opacity-60">{x.title}</p>
+                {x.figure ? (
+                  <p className="my-6">
+                    <span
+                      className="count block text-[clamp(56px,6vw,110px)] font-[200] leading-none tabular-nums [font-stretch:125%]"
+                      data-value={x.figure.value ?? ""}
+                    >
+                      {x.figure.value === null ? "—" : "0"}
+                    </span>
+                    <span className="t-mono mt-2 block opacity-60">{x.figure.label}</span>
+                  </p>
+                ) : null}
+                {x.items ? (
+                  <ul className="flex flex-col gap-2 text-[15px] opacity-85">
+                    {x.items.map((it, k) => (
+                      <li key={k}>— {it}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="placeholder self-start">À compléter</p>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ------------------------------------------------ contact */}
-      <section ref={reg(7)} id="contact" className="relative min-h-[130svh]">
+      <section ref={reg(6)} id="contact" className="relative min-h-[130svh]">
         <div className="sticky top-0 flex h-svh flex-col justify-end px-[var(--gutter)] pb-[var(--gutter)]">
           <p className="t-mono mb-6 opacity-60">Contact</p>
           <a

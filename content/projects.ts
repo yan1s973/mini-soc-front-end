@@ -41,6 +41,10 @@ export interface Releve {
   results: string[] | null;
   limitations: string[] | null;
   links: { github: string | null; demo: string | null };
+  /** mis en avant dans « Projets » (4 maximum) */
+  featured?: boolean;
+  /** vignette : chemin dans /public, ex. "/projets/mon-projet.jpg" */
+  thumbnail?: string | null;
 }
 
 const empty = (slug: string, discipline: DisciplineId): Releve => ({
@@ -65,16 +69,16 @@ const empty = (slug: string, discipline: DisciplineId): Releve => ({
 });
 
 export const RELEVES: Releve[] = [
-  empty("software-01", "software"),
+  { ...empty("software-01", "software"), featured: true },
   empty("software-02", "software"),
   empty("software-03", "software"),
-  empty("cyber-01", "cyber"),
+  { ...empty("cyber-01", "cyber"), featured: true },
   empty("cyber-02", "cyber"),
   empty("cyber-03", "cyber"),
-  empty("cloud-01", "cloud"),
+  { ...empty("cloud-01", "cloud"), featured: true },
   empty("cloud-02", "cloud"),
   empty("cloud-03", "cloud"),
-  empty("lab-01", "lab"),
+  { ...empty("lab-01", "lab"), featured: true },
   empty("lab-02", "lab"),
 ];
 
@@ -95,4 +99,9 @@ export function codeOf(r: Releve) {
 /** rang dans le chapitre — par slug : les objets traversent la frontière serveur/client */
 export function indexOf(r: Releve) {
   return relevesOf(r.discipline).findIndex((x) => x.slug === r.slug);
+}
+
+/** Les projets mis en avant (section « Projets » de l'accueil). */
+export function featured() {
+  return RELEVES.filter((r) => r.featured).slice(0, 4);
 }
